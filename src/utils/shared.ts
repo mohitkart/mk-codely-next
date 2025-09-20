@@ -25,7 +25,7 @@ const getImage = (model: any, name: any = '') => {
   return `https://firebasestorage.googleapis.com/v0/b/${envirnment.firebase.storageBucket}/o/assets%2F${model}%2F${name}?alt=media`
 }
 
-export const noImg = (img:any='',model='blogs', defaultImg = '/assets/img/placeholder.png') => {
+export const noImg = (img:any='',model='blogs', defaultImg = '/img/placeholder.png') => {
   let value = defaultImg;
   if (img?.includes("https")) return img;
   if (img) value = getImage(model,img);

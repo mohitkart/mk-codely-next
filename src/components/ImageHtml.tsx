@@ -14,7 +14,7 @@ type Props={
 
 export default function ImageHtml({
   src,
-  errSrc = "/assets/img/placeholder.jpg",
+  errSrc = "/img/placeholder.jpg",
   onClick = () => {},
   className = "",
   id = "",
