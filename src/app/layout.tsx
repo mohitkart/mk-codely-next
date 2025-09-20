@@ -1,10 +1,10 @@
 "use client";
-
 import { Geist, Geist_Mono } from "next/font/google";
 import { ToastContainer } from "react-toastify";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistor, store } from "@/redux/store";
+import 'react-toastify/dist/ReactToastify.css';
 import "./globals.css";
 
 const geistSans = Geist({
@@ -32,6 +32,10 @@ const Loading = ({ id = '', className = '' }) => {
   </>
 }
 
+import { Inter } from 'next/font/google'
+// If loading a variable font, you don't need to specify the font weight
+const inter = Inter({ subsets: ['latin'] })
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -50,7 +54,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased ${inter.className}`}
       >
          <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>

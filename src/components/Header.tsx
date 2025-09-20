@@ -65,7 +65,7 @@ const router=useRouter()
           <Link className="text-black hover:text-blue-500" href="/">Home</Link>
         </li>
         <li>
-          <Link className="hover:text-blue-500" href="/blogs">Blogs</Link>
+          <Link className="hover:text-blue-500" href="/blog">Blogs</Link>
         </li>
         <li>
           <Link className="hover:text-blue-500" href="/html">Html</Link>

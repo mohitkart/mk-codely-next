@@ -1,6 +1,4 @@
 "use client";
-
-import Header from "@/components/Header";
 import { RootState } from "@/redux/store";
 import { useRouter, } from "next/navigation";
 import { useEffect } from "react";

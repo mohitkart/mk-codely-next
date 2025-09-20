@@ -37,7 +37,7 @@ const FireApi = (controllerRef: ControllerRef = { current: null }) => {
           break;
         case "unauthenticated":
           message = "Unauthenticated";
-        //   document.getElementById("logoutBtn")?.click();
+          //   document.getElementById("logoutBtn")?.click();
           hideError = true;
           break;
         default:
@@ -56,11 +56,14 @@ const FireApi = (controllerRef: ControllerRef = { current: null }) => {
     table: string,
     data: any = {},
     conditions: FirestoreConditions[] = [],
-    id?: string,
-    hideError = false
+    id?: any,
+    hideError = false,
+    sortBy?: string, // field to sort by
+    sortOrder?: "asc" | "desc",
+    limit?:number
   ): Promise<ApiResponse<T>> => {
     setIsLoading(true);
-    data.addedBy=user?.id||null
+    data.addedBy = user?.id || null
 
     try {
       let result: any;
@@ -70,7 +73,7 @@ const FireApi = (controllerRef: ControllerRef = { current: null }) => {
           if (id) {
             result = await getIdFire({ table, id });
           } else {
-            result = await getFire({ table, conditions });
+            result = await getFire({ table, conditions, sortBy, sortOrder ,limit});
           }
           break;
 
@@ -105,9 +108,12 @@ const FireApi = (controllerRef: ControllerRef = { current: null }) => {
   const get = <T = any>(
     table: string,
     conditions?: FirestoreConditions[],
-    id?: string,
-    hideError = false
-  ) => handleRequest<T>("get", table, {}, conditions, id, hideError);
+    id?: any,
+    hideError = false,
+    sortBy?: string, // field to sort by
+    sortOrder?: "asc" | "desc",
+    limit?:number
+  ) => handleRequest<T>("get", table, {}, conditions, id, hideError, sortBy, sortOrder,limit);
 
   const post = <T = any>(
     table: string,
@@ -128,15 +134,15 @@ const FireApi = (controllerRef: ControllerRef = { current: null }) => {
   ) => handleRequest<T>("delete", table, {}, [], id, hideError);
 
   // Multi-image upload would need Firebase Storage implementation
-  const imageUploads =async(
+  const imageUploads = async (
     modal: string,
-    files:any[],
-    hideError=false
+    files: any[],
+    hideError = false
   ) => {
     setIsLoading(true);
 
     try {
-      const result = await uploadFiles(files,modal);
+      const result = await uploadFiles(files, modal);
       setIsLoading(false);
       return { data: result.data || result, ...result };
 
@@ -146,9 +152,9 @@ const FireApi = (controllerRef: ControllerRef = { current: null }) => {
     }
   };
 
-    const deleteFile =async(
+  const deleteFile = async (
     path: string,
-    hideError=false
+    hideError = false
   ) => {
     setIsLoading(true);
     try {
@@ -169,7 +175,7 @@ const FireApi = (controllerRef: ControllerRef = { current: null }) => {
     method: HttpMethod = "get"
   ) => {
     const { id, conditions = [], ...payload } = params;
-    
+
     switch (method) {
       case "get":
         return get<T>(table, conditions, id);

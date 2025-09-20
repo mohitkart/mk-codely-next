@@ -86,7 +86,9 @@ export default function HomeComponent() {
                         </> : <>
                             <button onClick={() => setFilter(prev => ({ ...prev, category: '' }))} className={`cursor-pointer active px-4 py-2 rounded-lg ${!filters.category ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}>All</button>
                             {categories.map((item: any) => {
-                                return <button key={item.id} onClick={() => setFilter(prev => ({ ...prev, category: item.id }))} className={`cursor-pointer px-4 py-2 rounded-lg ${item.id == filters.category ? `bg-${item.color ? `[${item.color}]` : 'blue-600'} text-white` : `bg-white text-${item.color ? `[${item.color}]` : 'blue-600'}`}`}>{item.name}</button>
+                                return <button key={item.id}
+                                style={{backgroundColor:item.id == filters.category?item.color:null,color:item.id == filters.category?'white':''}}
+                                onClick={() => setFilter(prev => ({ ...prev, category: item.id }))} className={`cursor-pointer px-4 py-2 rounded-lg ${item.id == filters.category ? `bg-${item.color ? `[${item.color}]` : 'blue-600'} text-white` : `bg-white text-${item.color ? `[${item.color}]` : 'blue-600'}`}`}>{item.name}</button>
                             })}
                         </>}
 
@@ -127,10 +129,10 @@ export default function HomeComponent() {
                     </> : <>
                         {list.map((item: any, i: any) => {
                             const color = item.categoryDetail?.color
-                            return <div key={i} className={`bg-white rounded-xl shadow-md overflow-hidden border-l-4 border-${color ? `[${color}]` : 'blue-600'} hover:shadow-lg transition-shadow`}>
+                            return <div key={i} style={{borderColor:color}} className={`bg-white rounded-xl shadow-md overflow-hidden border-l-4 border-${color ? `[${color}]` : 'blue-600'} hover:shadow-lg transition-shadow`}>
                                 <div className="p-6">
                                     <div className="flex justify-between items-start mb-4">
-                                        <span className={`text-white bg-${color ? `[${color}]` : ''} text-xs font-medium px-2.5 py-0.5 rounded`}>{item.categoryDetail?.name}</span>
+                                        <span style={{backgroundColor:color}} className={`text-white bg-${color ? `[${color}]` : ''} text-xs font-medium px-2.5 py-0.5 rounded`}>{item.categoryDetail?.name}</span>
                                         <span className="text-gray-500 text-sm">{datepipeModel.datetime(item.createdAt)}</span>
                                     </div>
                                     <h3 className="text-xl font-semibold text-gray-800 mb-2">{item.title}</h3>

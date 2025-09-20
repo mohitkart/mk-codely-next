@@ -1,3 +1,5 @@
+import { noImg } from "./shared"
+
 export const socialOptions = ["Word of Mouth",
     "Drive By",
     "Internet Search",

@@ -15,12 +15,23 @@ export const loaderHtml = (p: boolean) => {
 
 export const capitalize = (str:string) => str ? str.replace(/\b\w/g, (char:string) => char.toUpperCase()) : '';
 
-export const noImg = (img:any='', defaultImg = '/assets/img/placeholder.png') => {
+export const copyClipboard=(text:any='')=>{
+  navigator.clipboard.writeText(text);
+}
+
+const getImage = (model: any, name: any = '') => {
+  model = model.replaceAll('/', '%2F')
+  if (name.includes('https')) return name
+  return `https://firebasestorage.googleapis.com/v0/b/${envirnment.firebase.storageBucket}/o/assets%2F${model}%2F${name}?alt=media`
+}
+
+export const noImg = (img:any='',model='blogs', defaultImg = '/assets/img/placeholder.png') => {
   let value = defaultImg;
   if (img?.includes("https")) return img;
-  if (img) value = `${envirnment.image_path}${img}`;
+  if (img) value = getImage(model,img);
   return value;
 };
+
 
 export const isNumber = (e:any) => {
   const key = e.target;

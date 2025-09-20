@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, limit, orderBy, query, QueryConstraint, updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, limit as limitDocs, orderBy, query, QueryConstraint, updateDoc, where } from "firebase/firestore";
 import { deleteObject, getStorage, listAll, ref, uploadBytes } from "firebase/storage";
 import { getDatabase, set,ref as rtRef } from "firebase/database";
 import datepipeModel from "./datepipemodel";
@@ -29,6 +29,9 @@ interface GetProps {
   table: string;
   conditions?: FirestoreConditions[];
   id?: string;
+  sortBy?: string; // field to sort by
+  sortOrder?: "asc" | "desc"; // order
+  limit?:number;
 }
 
 export const getImage=(model:string,name:string='')=>{
@@ -126,17 +129,26 @@ export const getQuery=(table:string,conditions:FirestoreConditions[]=[],count:nu
    const constraints: QueryConstraint[] = conditions.map((c) =>
         where(c.field, c.operator, c.value)
       );
-   const q = query(collection(db, table), ...constraints,orderBy("createdAt",'desc'),limit(count));
+   const q = query(collection(db, table), ...constraints,orderBy("createdAt",'desc'),limitDocs(count));
    return q
 }
 
 
 // Firebase specific operations
-  export const getFire = async ({ table, conditions = [] }: GetProps) => {
+  export const getFire = async ({ table, conditions = [], sortBy, sortOrder = "asc",limit}: GetProps) => {
     try {
       const constraints: QueryConstraint[] = conditions.map((c) =>
         where(c.field, c.operator, c.value)
       );
+      if (sortBy) {
+        constraints.push(orderBy(sortBy, sortOrder));
+      }
+
+      // Add limit if provided
+      if (limit) {
+        constraints.push(limitDocs(limit));
+      }
+
       const q = query(collection(db, table), ...constraints);
       const snapshot = await getDocs(q);
       

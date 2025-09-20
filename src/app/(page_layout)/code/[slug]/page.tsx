@@ -3,8 +3,7 @@ import { APP_DESCRIPTION, APP_NAME, noImg } from "@/utils/shared";
 import { getIdFire } from "@/utils/firebase.utils";
 import Detail from "./Detail";
 
-const table = 'blogs'
-
+const table = 'code'
 async function getBlog(slug: string) {
   const detail: any = await getIdFire({ table, id: slug })
   return detail.data
@@ -56,9 +55,7 @@ export async function generateMetadata(
 }
 
 export default function DetailPage() {
-  return (
-   <>
-   <Detail/>
-   </>
-  );
+    return <>
+    <Detail/>
+    </>
 }
