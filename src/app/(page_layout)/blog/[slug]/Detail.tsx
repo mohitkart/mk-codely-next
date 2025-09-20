@@ -64,13 +64,28 @@ export default function BlogDetail() {
     <main className="container mx-auto px-4 py-8 md:py-12">
       <div className="lg:flex lg:space-x-12">
 
-        {loaderData ? <>
+        {detailLoading?<>
+        <article className="lg:w-2/3">
+         <div className="h-[20px] shine mb-3"></div>
+          <div className="h-[30px] shine mb-3"></div>
+          <div className="h-[60px] max-w-[150px] shine mb-3"></div>
+        <div className="h-[300px] shine mb-3 rounded"></div>
+        <div className="h-[10px] shine mb-3 rounded"></div>
+        <div className="h-[10px] shine mb-3 rounded"></div>
+        <div className="h-[10px] shine mb-3 rounded"></div>
+        <div className="h-[10px] shine mb-3 rounded"></div>
+        <div className="h-[10px] shine mb-3 rounded"></div>
+       
+        </article>
+       
+        </>:<>
+          {loaderData ? <>
           <article className="lg:w-2/3">
             {catLoading ? <>
               <div className="shine w-[300px] h-[20px]"></div>
             </> : <>
               <nav className="text-sm text-gray-500 mb-6">
-                <Link href="/blogs" className="hover:text-primary">Blogs</Link> / <Link href={`/blogs?category=${category?.id}`} className="hover:text-primary">{category?.name}</Link> / <span className="text-gray-700">{loaderData?.title}</span>
+                <Link href="/blog" className="hover:text-primary">Blogs</Link> / <Link href={`/blog?category=${category?.id}`} className="hover:text-primary">{category?.name}</Link> / <span className="text-gray-700">{loaderData?.title}</span>
               </nav>
             </>}
             <header className="mb-8">
@@ -106,7 +121,7 @@ export default function BlogDetail() {
               <h3 className="font-semibold text-dark mb-3">Tags:</h3>
               <div className="flex flex-wrap gap-2">
                 {loaderData?.tags?.map((tag: any, i: any) => {
-                  return <Link href={`/blogs?tags=${tag}`} key={i} className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-blue-600 hover:text-white transition">{tag}</Link>
+                  return <Link href={`/blog?tags=${tag}`} key={i} className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-blue-600 hover:text-white transition">{tag}</Link>
                 })}
               </div>
             </div>
@@ -226,6 +241,9 @@ export default function BlogDetail() {
             <h1 className="font-bold text-[20px] text-center">Blog Not Found</h1>
           </article>
         </>}
+        </>}
+
+      
 
 
 
@@ -234,7 +252,7 @@ export default function BlogDetail() {
 
           <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
             <h3 className="font-semibold text-dark mb-4">Search</h3>
-            <form className="relative" onSubmit={e => { e.preventDefault(); navigate(`/blogs?search=${search.trim()}`) }}>
+            <form className="relative" onSubmit={e => { e.preventDefault(); navigate(`/blog?search=${search.trim()}`) }}>
               <input type="text"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
@@ -259,7 +277,7 @@ export default function BlogDetail() {
                 <div className="shine h-[20px] mb-3"></div>
               </> : <>
                 {categories?.map((item: any, i: any) => {
-                  return <li key={i}><Link href={`/blogs?category=${item.id}`} className="text-gray-700 hover:text-primary flex justify-between"><span>{item.name}</span>
+                  return <li key={i}><Link href={`/blog?category=${item.id}`} className="text-gray-700 hover:text-primary flex justify-between"><span>{item.name}</span>
                     {/* <span>(12)</span> */}
                   </Link></li>
                 })}

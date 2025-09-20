@@ -110,7 +110,7 @@ export default function Blogs() {
           <p className="text-xl mb-8">Explore our collection of articles on technology, design, business, and more.</p>
           <div className="relative">
             <input type="text" 
-            value={filters.search?.trim()}
+            value={filters.search?.trim()||''}
             onChange={e=>setFilter(prev=>({...prev,search:e.target.value}))}
             placeholder="Search articles..." className="w-full py-3 px-4 rounded-lg text-[#000] focus:outline-none bg-white" />
             <button className="cursor-pointer absolute right-2 top-2 bg-blue-500 flex items-center justify-center text-white p-2 rounded-lg">
