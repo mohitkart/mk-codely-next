@@ -65,7 +65,7 @@ export default function MkDoughnutChart({
     const customTooltip = {
         trigger: 'item',
         formatter: function (params: any) {
-            let data = params.data
+            const data = params.data
             let html = `<b>${capitalize(data?.name)} (${params.percent}%)</b><br/>`
             clegends.map(itm => {
                 html += `${capitalize(itm.label)}: ${prefix}${setValue(itm, data)}${suffix}<br/>`
@@ -129,7 +129,7 @@ export default function MkDoughnutChart({
     }, [hiddenItem, cdata, clegends, config]);
 
     const getTotal = useCallback((key: any) => {
-        let arr = cdata.map((ditm: any) => Number(ditm[key] || 0))
+        const arr = cdata.map((ditm: any) => Number(ditm[key] || 0))
         return arr.length ? arr.reduce((total: any, value: any) => total + value) : 0
     }, [cdata])
 

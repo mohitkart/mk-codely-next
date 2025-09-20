@@ -126,7 +126,7 @@ export default function HomeComponent() {
                         </div>
                     </> : <>
                         {list.map((item: any, i: any) => {
-                            let color = item.categoryDetail?.color
+                            const color = item.categoryDetail?.color
                             return <div key={i} className={`bg-white rounded-xl shadow-md overflow-hidden border-l-4 border-${color ? `[${color}]` : 'blue-600'} hover:shadow-lg transition-shadow`}>
                                 <div className="p-6">
                                     <div className="flex justify-between items-start mb-4">

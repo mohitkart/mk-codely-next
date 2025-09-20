@@ -5,10 +5,9 @@ type Props={
   position?:'fixed'|'absolute';
   children?:any;
   title?:any;
-  placement?:'top'|'bottom'
 }
 
-const TooltipHtml = ({position='fixed', children,title,placement}:Props) => {
+const TooltipHtml = ({position='fixed', children,title}:Props) => {
   const buttonRef = useRef<any>(null);
   const [tooltipVisible, setTooltipVisible] = useState(false);
    const [dropdownStyle, setDropdownStyle] = useState({});

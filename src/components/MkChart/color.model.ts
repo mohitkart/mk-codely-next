@@ -31,7 +31,7 @@ function getRandomLightColor() {
 }
 
 function getColor(i=-1){
-    let value=list?.[i]||getRandomLightColor()
+    const value=list?.[i]||getRandomLightColor()
     return value
 }
 

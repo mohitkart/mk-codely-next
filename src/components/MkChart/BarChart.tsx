@@ -163,7 +163,7 @@ export default memo(function MkBarChart({
     }, [hiddenItem, cdata, clegends, barType]);
 
     const getTotal = useCallback((key: any) => {
-        let arr = cdata.map((ditm: any) => Number(ditm[key] || 0))
+        const arr = cdata.map((ditm: any) => Number(ditm[key] || 0))
         return arr.length ? arr.reduce((total: any, value: any) => total + value) : 0
     }, [cdata])
 

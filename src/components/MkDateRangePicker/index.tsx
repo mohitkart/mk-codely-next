@@ -173,7 +173,7 @@ const MkDateRangePicker: React.FC<MkDateRangePickerProps> = ({
   const prevClick = () => {
     let date = rangeValue.startDate
     if (date) {
-      let d = new Date(date)
+      const d = new Date(date)
       d.setDate(d.getDate() - 1)
       date = datepipeModel.datetostring(d)
     } else {
@@ -185,7 +185,7 @@ const MkDateRangePicker: React.FC<MkDateRangePickerProps> = ({
   const nextClick=()=>{
  let date = rangeValue.startDate
     if (date) {
-      let d = new Date(date)
+      const d = new Date(date)
       d.setDate(d.getDate() + 1)
       date = datepipeModel.datetostring(d)
     } else {

@@ -128,7 +128,7 @@ const FireApi = (controllerRef: ControllerRef = { current: null }) => {
   ) => handleRequest<T>("delete", table, {}, [], id, hideError);
 
   // Multi-image upload would need Firebase Storage implementation
-  const imageUploads =async <T = any>(
+  const imageUploads =async(
     modal: string,
     files:any[],
     hideError=false
@@ -136,10 +136,9 @@ const FireApi = (controllerRef: ControllerRef = { current: null }) => {
     setIsLoading(true);
 
     try {
-      let result: any;
-       result = await uploadFiles(files,modal);
+      const result = await uploadFiles(files,modal);
       setIsLoading(false);
-      return { success: true, data: result.data || result, ...result };
+      return { data: result.data || result, ...result };
 
     } catch (error: any) {
       setIsLoading(false);
@@ -147,16 +146,15 @@ const FireApi = (controllerRef: ControllerRef = { current: null }) => {
     }
   };
 
-    const deleteFile =async <T = any>(
+    const deleteFile =async(
     path: string,
     hideError=false
   ) => {
     setIsLoading(true);
     try {
-      let result: any;
-       result = await deleteFileFire(path);
+      const result = await deleteFileFire(path);
       setIsLoading(false);
-      return { success: true, data: result?.data || result, ...result };
+      return { ...result };
 
     } catch (error: any) {
       setIsLoading(false);

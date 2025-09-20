@@ -118,7 +118,7 @@ export default function MkLineChart({ smooth = false, areaStyle = true, animatio
                         smooth: smooth
                     }
                 }).filter((fitm: any) => {
-                    let ext: any = hiddenItem.find((eitm: any) => eitm.key == fitm.key || eitm.compare == fitm.key)
+                    const ext: any = hiddenItem.find((eitm: any) => eitm.key == fitm.key || eitm.compare == fitm.key)
                     let value = true
                     if (ext) {
                         value = false
@@ -135,14 +135,14 @@ export default function MkLineChart({ smooth = false, areaStyle = true, animatio
 
     const getTotal = useCallback((key: any) => {
         let value = 0
-        let arr = data.map((ditm: any) => Number(ditm[key] || 0))
+        const arr = data.map((ditm: any) => Number(ditm[key] || 0))
         if (arr.length) value = arr.reduce((total: any, value: any) => total + value)
         return value
     }, [data])
 
 
     const handleChartClick = (e: any) => {
-        let value = {
+        const value = {
             value: e.value,
             name: e.name,
             seriesName: e.seriesName

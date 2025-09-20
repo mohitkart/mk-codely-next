@@ -60,8 +60,8 @@ export async function uploadFiles(files: File[], modal: string) {
 
     for (const file of files) {
       // Generate unique name and clean spaces
-      let name = `${getRandomCode(10)}_${file.name}`.replaceAll(" ", "_");
-      let path = `assets/${modal}/${name}`;
+      const name = `${getRandomCode(10)}_${file.name}`.replaceAll(" ", "_");
+      const path = `assets/${modal}/${name}`;
 
       // Create a reference with unique name
       const storageRef = ref(storage, path);
