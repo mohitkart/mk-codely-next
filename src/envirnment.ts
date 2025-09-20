@@ -1,0 +1,20 @@
+
+const env = process.env as any
+const envirnment = {
+    app_name: (env.NEXT_PUBLIC_APP_NAME || 'my app').replaceAll(' ', '_'),
+    secret_key: env.NEXT_PUBLIC_SEKRET_KEY,
+    api: env.NEXT_PUBLIC_API_URL,
+    userRoleId: env.NEXT_PUBLIC_USER_ROLE_ID,
+    adminRoleId: env.NEXT_PUBLIC_ADMIN_ID,
+    frontUrl: env.NEXT_PUBLIC_FRONT_URL,
+    image_path: env.NEXT_PUBLIC_IMAGE_PATH,
+    firebase: {
+        apiKey: env.NEXT_PUBLIC_FIREBASE_API_KEY,
+        authDomain: env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+        projectId: env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+        storageBucket: env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+        databaseURL: env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
+    }
+}
+export default envirnment
