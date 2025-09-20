@@ -66,7 +66,6 @@ export default function HomeComponent() {
     return (
         <>
             <main className="container mx-auto px-4 py-8">
-
                 <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 space-y-4 lg:space-y-0">
                     {listLoading ? <>
                         <div className="shine h-[100px] w-[130px] rounded-lg shadow-sm"></div>
@@ -76,7 +75,6 @@ export default function HomeComponent() {
                             <p className="text-3xl font-bold text-blue-600">{data.length}</p>
                         </div>
                     </>}
-
 
                     <div className="flex flex-wrap gap-2">
                         {categoryLoading ? <>
@@ -91,11 +89,8 @@ export default function HomeComponent() {
                                 onClick={() => setFilter(prev => ({ ...prev, category: item.id }))} className={`cursor-pointer px-4 py-2 rounded-lg ${item.id == filters.category ? `bg-${item.color ? `[${item.color}]` : 'blue-600'} text-white` : `bg-white text-${item.color ? `[${item.color}]` : 'blue-600'}`}`}>{item.name}</button>
                             })}
                         </>}
-
-
                     </div>
                 </div>
-
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {listLoading ? <>
@@ -150,19 +145,6 @@ export default function HomeComponent() {
                         })}
                     </>}
                 </div>
-                {/* <div className="flex justify-center mt-12">
-        <nav className="inline-flex rounded-md shadow">
-          <a href="#" className="py-2 px-4 border border-gray-300 bg-white text-blue-600 rounded-l-md hover:bg-gray-50">
-            <i className="fas fa-chevron-left"></i>
-          </a>
-          <a href="#" className="py-2 px-4 border border-gray-300 bg-white text-blue-600 hover:bg-gray-50">1</a>
-          <a href="#" className="py-2 px-4 border border-gray-300 bg-blue-600 text-white hover:bg-secondary">2</a>
-          <a href="#" className="py-2 px-4 border border-gray-300 bg-white text-blue-600 hover:bg-gray-50">3</a>
-          <a href="#" className="py-2 px-4 border border-gray-300 bg-white text-blue-600 rounded-r-md hover:bg-gray-50">
-            <i className="fas fa-chevron-right"></i>
-          </a>
-        </nav>
-      </div> */}
             </main>
         </>
     );

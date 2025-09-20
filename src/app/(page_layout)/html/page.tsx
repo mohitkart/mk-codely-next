@@ -10,8 +10,7 @@ export const metadata: Metadata = {
 export default function HtmlPage() {
   return (
    <>
-  <Content 
-  />
+  <Content />
    </>
   );
 }
