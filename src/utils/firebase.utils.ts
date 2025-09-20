@@ -83,7 +83,7 @@ export async function uploadFiles(files: File[], modal: string) {
     return { success: true, data: uploadedFiles };
   } catch (error) {
     console.error("❌ Error uploading files:", error);
-    return { success: false, error };
+    return { success: false, error};
   }
 }
 
