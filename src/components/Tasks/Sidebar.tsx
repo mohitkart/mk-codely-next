@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
 import { getColor } from "../MkChart";
 import { fire } from "../Swal";
+import datepipeModel from "@/utils/datepipemodel";
 
 type props = {
   filters?: TaskFilters;
@@ -16,10 +17,13 @@ type props = {
   categories: any[];
   isLoading?: boolean;
   onChange?: any;
-  setCategories: (_: any) => void
+  setCategories: (_: any) => void;
+  recentPost?: any[];
+  handleEditTask:(_:Task)=>void;
+  handleDeleteTask:(_:any)=>void;
 }
 
-const Sidebar = ({ categories, setCategories, filters, isLoading = false, onChange = (_: any) => { }, tasks }: props) => {
+const Sidebar = ({ categories, setCategories,handleEditTask,handleDeleteTask, recentPost, filters, isLoading = false, onChange = (_: any) => { }, tasks }: props) => {
   const user: any = useSelector((state: RootState) => state.user.data);
   const catTable = 'taskCategory'
   const table = 'tasks'
@@ -36,39 +40,39 @@ const Sidebar = ({ categories, setCategories, filters, isLoading = false, onChan
 
   const onDeleteCategory = (id: any) => {
     fire({
-      icon:'warning',
-      title:'Are you sure you want to delete this project',
-      showCancelButton:true
-    }).then(res=>{
-     if (res.isConfirmed) {
-      if (user) {
-        loaderHtml(true)
-        deleteApi(catTable, id).then(res => {
-          if (res.success) {
-            let arr = [...categories]
-            arr = arr.filter(itm => itm.id != id)
-            setCategories([...arr]);
-          }
-        }).finally(() => {
-          loaderHtml(false)
-        })
-
-        tasks.filter(item => item.category == id).map(item => {
-          deleteApi(table, item.id).then(res => {
+      icon: 'warning',
+      title: 'Are you sure you want to delete this project',
+      showCancelButton: true
+    }).then(res => {
+      if (res.isConfirmed) {
+        if (user) {
+          loaderHtml(true)
+          deleteApi(catTable, id).then(res => {
             if (res.success) {
-
+              let arr = [...categories]
+              arr = arr.filter(itm => itm.id != id)
+              setCategories([...arr]);
             }
+          }).finally(() => {
+            loaderHtml(false)
           })
-        })
-      } else {
-        let arr = [...categories]
-        arr = arr.filter(itm => itm.id != id)
-        setCategories([...arr]);
-      }
 
-    }
+          tasks.filter(item => item.category == id).map(item => {
+            deleteApi(table, item.id).then(res => {
+              if (res.success) {
+
+              }
+            })
+          })
+        } else {
+          let arr = [...categories]
+          arr = arr.filter(itm => itm.id != id)
+          setCategories([...arr]);
+        }
+
+      }
     })
-    
+
   }
 
   const AddCategory = () => {
@@ -89,7 +93,7 @@ const Sidebar = ({ categories, setCategories, filters, isLoading = false, onChan
       const newData: Task = {
         ...payload,
         createdAt: new Date().toISOString(),
-        color: getColor() 
+        color: getColor()
       };
       setCategories([...categories, newData]);
     }
@@ -135,8 +139,8 @@ const Sidebar = ({ categories, setCategories, filters, isLoading = false, onChan
 
   }
 
-  const catList=useMemo(()=>{
-      return categories.filter((item: Task) => {
+  const catList = useMemo(() => {
+    return categories.filter((item: Task) => {
       let value = true
       const s = search?.toLowerCase().trim()
       if (s) {
@@ -145,84 +149,111 @@ const Sidebar = ({ categories, setCategories, filters, isLoading = false, onChan
       }
       return value
     })
-  },[categories,search])
+  }, [categories, search])
 
   return (
     <>
       <div className="w-64 bg-white shadow-sm fixed h-full hidden md:block">
-        <div className="p-5 border-b">
+        {/* <div className="p-5 border-b">
           <h1 className="text-xl font-bold text-blue-600 flex items-center">
             <span className="material-symbols-outlined mr-2">task</span> Task Manager
           </h1>
-        </div>
+        </div> */}
         <div className="p-4">
           <h2 className="text-xs uppercase text-gray-500 mb-3 tracking-wider font-semibold">Projects</h2>
           <div className="relative mb-4">
             <input type="text"
-            value={search}
-            onChange={e=>setSearch(e.target.value.trimStart())}
-            placeholder="Search Project" className="w-full p-2 text-sm border rounded-md pl-8 focus:ring-1 focus:ring-blue-600 focus:border-blue-600" />
+              value={search}
+              onChange={e => setSearch(e.target.value.trimStart())}
+              placeholder="Search Project" className="w-full p-2 text-sm border rounded-md pl-8 focus:ring-1 focus:ring-blue-600 focus:border-blue-600" />
             <span className="material-symbols-outlined absolute left-2 top-2.5 text-gray-400">search</span>
           </div>
 
-          <ul className="space-y-1 overflow-auto h-[calc(100vh-400px)]">
-
-            {isLoading ? <>
-              <div className="shine h-[36px]"></div>
-              <div className="shine h-[36px]"></div>
-              <div className="shine h-[36px]"></div>
-              <div className="shine h-[36px]"></div>
-              <div className="shine h-[36px]"></div>
-            </> : <>
-              <li onClick={() => onChange({ category: '' })} className={`sticky top-0 ${!filters?.category ? 'bg-indigo-50' : 'bg-white'} flex items-center text-sm p-2 hover:bg-indigo-50 text-blue-600 rounded-md cursor-pointer font-medium`}>
-                <span className="material-symbols-outlined mr-2 text-blue-600">folder_open</span>
-                All Projects <button
-                  className="ml-auto edit-task-btn"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    AddCategory();
-                  }}
-                >
-                  <span className="material-symbols-outlined text-gray-400 hover:text-gray-600">add</span>
-                </button>
-              </li>
-              {catList?.map((item: any) => {
-                return <li key={item.id} 
-                 onClick={() => onChange({ category: item.id })} 
-                 style={{color:item.color}} 
-                 className={`flex items-center ${filters?.category == item.id ? 'bg-blue-100' : ''} text-sm p-2 hover:bg-gray-100 rounded-md cursor-pointer`}>
-                  <span className={`material-symbols-outlined mr-2`}>folder</span>
-                  {item.name}
-                  <button
+          <div className="h-[calc(100vh-200px)]">
+            <ul className="h-1/2 space-y-1 overflow-auto">
+              {isLoading ? <>
+                <div className="shine h-[36px]"></div>
+                <div className="shine h-[36px]"></div>
+                <div className="shine h-[36px]"></div>
+                <div className="shine h-[36px]"></div>
+                <div className="shine h-[36px]"></div>
+              </> : <>
+                <li onClick={() => onChange({ category: '' })}
+                  className={`sticky gap-2 top-0 ${!filters?.category ? 'bg-indigo-50' : 'bg-white'} flex items-center text-sm p-2 hover:bg-indigo-50 text-blue-600 rounded-md cursor-pointer font-medium`}>
+                  <span className="material-symbols-outlined text-blue-600 !text-[18px]">folder_open</span>
+                  All Projects <button
                     className="ml-auto edit-task-btn"
                     onClick={(e) => {
                       e.stopPropagation();
-                      onEditCategory(item);
+                      AddCategory();
                     }}
                   >
-                    <span className="material-symbols-outlined text-gray-400 hover:text-gray-600">edit</span>
-                  </button>
-                  <button
-                    className="edit-task-btn"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDeleteCategory(item.id);
-                    }}
-                  >
-                    <span className="material-symbols-outlined text-gray-400 hover:text-gray-600">delete</span>
+                    <span className="material-symbols-outlined text-gray-400 hover:text-gray-600 !text-[16px]">add</span>
                   </button>
                 </li>
-              })}
-            </>}
+                {catList?.map((item: any) => {
+                  return <li key={item.id}
+                    onClick={() => onChange({ category: item.id })}
+                    style={{ color: item.color }}
+                    className={`flex items-center text-[14px] gap-2 ${filters?.category == item.id ? 'bg-blue-100' : ''} text-sm p-2 hover:bg-gray-100 rounded-md cursor-pointer`}>
+                    <span className={`material-symbols-outlined !text-[18px]`}>folder</span>
+                    {item.name}
+                    <button
+                      className="ml-auto edit-task-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEditCategory(item);
+                      }}
+                    >
+                      <span className="material-symbols-outlined text-gray-400 hover:text-gray-600 !text-[16px]">edit</span>
+                    </button>
+                    <button
+                      className="edit-task-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDeleteCategory(item.id);
+                      }}
+                    >
+                      <span className="material-symbols-outlined text-gray-400 hover:text-gray-600 !text-[16px]">delete</span>
+                    </button>
+                  </li>
+                })}
+              </>}
+            </ul>
 
-          </ul>
+            <div className="h-1/2 space-y-1 overflow-auto mt-3">
+              <h2 className="text-xs sticky top-0 bg-white uppercase text-gray-500 tracking-wider py-2 font-semibold">Recent</h2>
+              <ul className="">
+                {recentPost?.map((item: any) => {
+                  return <li key={item.id}
+                    className={`flex items-center text-[14px] gap-2 text-sm p-2 hover:bg-gray-100 rounded-md cursor-pointer`}>
+                      <div>
+                    <span className="line-clamp-2" title={item.name}>{item.name}</span>
+                    <div className="text-gray-400 text-[12px]">{datepipeModel.datetime(item.createdAt)}</div>
+                      </div>
 
-          <h2 className="text-xs uppercase text-gray-500 my-3 mt-6 tracking-wider font-semibold">Recent</h2>
-          <div className="bg-indigo-50 p-3 rounded-md border border-indigo-100">
-            <p className="text-xs font-medium text-indigo-700 flex items-center">
-              <span className="material-symbols-outlined mr-1">schedule</span> Shroom Groove
-            </p>
-            <p className="text-xs text-gray-500 mt-1">Last active: 2 Sep 2025</p>
+                    <button
+                      className="ml-auto edit-task-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditTask(item)
+                      }}
+                    >
+                      <span className="material-symbols-outlined text-gray-400 hover:text-gray-600 !text-[16px]">edit</span>
+                    </button>
+                    <button
+                      className="edit-task-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteTask(item.id)
+                      }}
+                    >
+                      <span className="material-symbols-outlined text-gray-400 hover:text-gray-600 !text-[16px]">delete</span>
+                    </button>
+                  </li>
+                })}
+              </ul>
+            </div>
           </div>
         </div>
       </div>

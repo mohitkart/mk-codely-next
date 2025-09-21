@@ -34,6 +34,7 @@ export default function TaskComponent({loaderData}:{loaderData?:Task}) {
     router.push(p)
   }
   const { get: getCategory, isLoading: categoryLoading } = FireApi()
+  const { get: getRecent, isLoading: recentLoading } = FireApi()
   const { deleteApi, put, post, isLoading: isDeleteLoading } = FireApi()
 
   const [data, setData] = useState<Task[]>([])
@@ -43,6 +44,7 @@ export default function TaskComponent({loaderData}:{loaderData?:Task}) {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isTaskFormOpen, setIsTaskFormOpen] = useState<any>(false);
   const [copyModal, setCopyModal] = useState<any>();
+  const [recentPost, setRecentPost] = useState<Task[]>([])
   
   const handleTaskClick = (task: Task) => {
     setSelectedTask(task);
@@ -76,6 +78,8 @@ export default function TaskComponent({loaderData}:{loaderData?:Task}) {
     if (isTaskFormOpen?.id) {
       // Update existing task
       setData(data.map(t => t.id === isTaskFormOpen?.id ? { ...t, ...payload } : t));
+      setRecentPost(recentPost.map(t => t.id === isTaskFormOpen?.id ? { ...t, ...payload } : t));
+      
       // setIsViewModalOpen(false);
       if(selectedTask?.id==payload.id){
             setSelectedTask({
@@ -114,6 +118,11 @@ export default function TaskComponent({loaderData}:{loaderData?:Task}) {
                  arr = arr.filter(itm => itm.id != id)
                 return arr
               });
+              setRecentPost((prev:Task[])=>{
+                let arr=[...prev]
+                 arr = arr.filter(itm => itm.id != id)
+                return arr
+              });
             viewModalRef.current?.refreshSubTasks({action:'delete',id:id})
           }
         }).finally(() => {
@@ -128,6 +137,11 @@ export default function TaskComponent({loaderData}:{loaderData?:Task}) {
                  arr = arr.filter(itm => itm.id != item.id)
                 return arr
               });
+              setRecentPost((prev: Task[]) => {
+                let arr = [...prev]
+                arr = arr.filter(itm => itm.id != item.id)
+                return arr
+              });
             }
           })
         })
@@ -138,6 +152,11 @@ export default function TaskComponent({loaderData}:{loaderData?:Task}) {
         })
         arr = arr.filter(itm => itm.id != id)
         setData([...arr]);
+        setRecentPost((prev: Task[]) => {
+          let arr = [...prev]
+          arr = arr.filter(itm => itm.id != id)
+          return arr
+        });
       }
     }
     })
@@ -153,6 +172,7 @@ export default function TaskComponent({loaderData}:{loaderData?:Task}) {
       put(table, p).then(res => {
         if (res.success) {
           setData(data.map(t => t.id === p?.id ? { ...t, ...p } : t));
+           setRecentPost(recentPost.map(t => t.id === p?.id ? { ...t, ...p } : t));
           // setIsViewModalOpen(false);
           if(selectedTask?.id==p.id){
             setSelectedTask({
@@ -245,6 +265,15 @@ export default function TaskComponent({loaderData}:{loaderData?:Task}) {
       handleTaskClick(loaderData)
     }
   }, [slug])
+
+  useEffect(() => {
+    getRecent(table, [{field:'addedBy',operator:'==',value:user.id}], '', false, 'createdAt', 'desc', 10).then(res => {
+      if (res.success) {
+        const data=res.data.map((item:any)=>({...item,date:fireDateParse(item.date)}))
+        setRecentPost(data)
+      }
+    })
+  }, [])
 
   const list = useMemo(() => {
     return data.filter((item: Task) => {
@@ -355,6 +384,9 @@ export default function TaskComponent({loaderData}:{loaderData?:Task}) {
         categories={categories}
         isLoading={categoryLoading}
         setCategories={setCategories}
+        recentPost={recentPost}
+        handleEditTask={handleEditTask}
+        handleDeleteTask={handleDeleteTask}
         onChange={(e: TaskFilters) => setFilter(prev => ({ ...prev, ...e }))}
       />
       <div className="md:ml-64 flex-1 p-5 md:p-8">
