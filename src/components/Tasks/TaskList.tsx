@@ -44,7 +44,7 @@ const CategoryCard = ({ item, tasks, selectTask, selected = [],
         <h2 className="font-semibold text-lg flex items-center"
         style={{color:item.color}}
         arial-id={item.id}>
-          <span className={`material-symbols-outlined mr-2`}>circle</span>
+          <span className={`material-symbols-outlined mr-2 !text-[18px]`}>circle</span>
           {item.name}
         </h2>
         <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
@@ -83,7 +83,7 @@ const CategoryCard = ({ item, tasks, selectTask, selected = [],
                 onEditTask(task);
               }}
             >
-              <span className="material-symbols-outlined text-gray-400 hover:text-gray-600">edit</span>
+              <span className="material-symbols-outlined text-gray-400 hover:text-gray-600 !text-[18px]">edit</span>
             </button>
             <button
               className="edit-task-btn"
@@ -92,12 +92,12 @@ const CategoryCard = ({ item, tasks, selectTask, selected = [],
                 onDeleteTask(task.id);
               }}
             >
-              <span className="material-symbols-outlined text-gray-400 hover:text-gray-600">delete</span>
+              <span className="material-symbols-outlined text-gray-400 hover:text-gray-600 !text-[18px]">delete</span>
             </button>
           </div>
           <div className="flex items-center text-sm text-gray-500 mt-2 ml-7">
             <span className="mr-3 flex items-center">
-              <span className="material-symbols-outlined mr-1">schedule</span> {datepipeModel.datetime(task.createdAt || '')}
+              <span className="material-symbols-outlined mr-1 !text-[18px]">schedule</span> {datepipeModel.datetime(task.createdAt || '')}
             </span>
             <OptionDropdown
               title={<>
@@ -105,7 +105,7 @@ const CategoryCard = ({ item, tasks, selectTask, selected = [],
                   task.status === 'Done' ? 'bg-green-100 text-green-800' :
                     'bg-gray-100 text-gray-800'
                   }`}>
-                  <span className="material-symbols-outlined mr-1 text-xs">
+                  <span className="material-symbols-outlined mr-1 !text-xs">
                     {task.status === 'In Progress' ? 'sync' :
                       task.status === 'Done' ? 'check_circle' : 'radio_button_unchecked'}
                   </span>
@@ -121,11 +121,11 @@ const CategoryCard = ({ item, tasks, selectTask, selected = [],
           </div>
           <div className='flex gap-2 flex-wrap mt-3'>
             <div onClick={() => onTaskClick(task)} className={`${subTasks?.length?'text-blue-500':'text-gray-500'} cursor-pointer text-sm flex items-center`}>
-              <span className="material-symbols-outlined mr-1 text-sm">format_list_bulleted</span>
+              <span className="material-symbols-outlined mr-1 !text-sm">format_list_bulleted</span>
               <span>{subTasks?.length} Subtasks</span>
             </div>
             <div onClick={() => onTaskClick(task)} className="cursor-pointer text-sm text-gray-500 flex items-center">
-              <span className="material-symbols-outlined mr-1 text-sm">folder</span>
+              <span className="material-symbols-outlined mr-1 !text-sm">folder</span>
               <span>{task?.categoryDetail?.name||task?.category||'Other'}</span>
             </div>
           </div>
@@ -138,7 +138,7 @@ const CategoryCard = ({ item, tasks, selectTask, selected = [],
         onClick={() => onAddTask(item.id)}
         className="w-full text-center text-blue-600 hover:bg-gray-100 py-2 rounded-md text-sm flex items-center justify-center"
       >
-        <span className="material-symbols-outlined mr-2">add</span> Add Task
+        <span className="material-symbols-outlined mr-2 !text-[18px]">add</span> Add Task
       </button>
     </div>
   </div>
