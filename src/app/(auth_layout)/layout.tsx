@@ -15,9 +15,8 @@ export default function Layout({
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-    if (!user) {
-    }
-  }, []);
+    if (user) router.push('/')
+  }, [user,router]);
 
   return (
     <>

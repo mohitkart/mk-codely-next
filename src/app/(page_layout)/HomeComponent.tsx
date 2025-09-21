@@ -62,7 +62,7 @@ export default function HomeComponent() {
         }).sort((a: any, b: any) => {
             return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         })
-    }, [data, filters])
+    }, [data, filters,categories])
     return (
         <>
             <main className="container mx-auto px-4 py-8">

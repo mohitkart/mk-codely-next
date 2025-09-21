@@ -1,13 +1,13 @@
 "use client";
-
 import Header from "@/components/Header";
+import { login, logout } from "@/redux/slices/userSlice";
 import { RootState } from "@/redux/store";
-import ApiClientB from "@/utils/Apiclient";
+import FireApi from "@/utils/firebaseApi.utils";
 import { useRouter, } from "next/navigation";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-
+const table = 'users'
 export default function Layout({
   children,
 }: Readonly<{
@@ -16,18 +16,23 @@ export default function Layout({
   const router = useRouter()
   const user: any = useSelector((state: RootState) => state.user.data);
 
-  const { get, post, put } = ApiClientB()
-
-
+  const { get } = FireApi()
   const dispatch = useDispatch();
 
   const getUserDetail = () => {
-    // get("user/profile", { id: (user._id || user.id) }).then(async (res) => {
-    //   if (res.success) {
-    //     const data = { ...user, ...res.data };
-    //     dispatch(login(data));
-    //   }
-    // });
+    get(table, [{ field: 'accessToken', operator: '==', value: user.accessToken }]).then(async (res) => {
+      if (res.success) {
+        const rdata = res.data?.[0]
+        if (rdata) {
+          const data = { ...user, ...rdata };
+          dispatch(login(data));
+        } else {
+          router.push('/')
+          dispatch(logout());
+        }
+
+      }
+    });
   }
 
   useEffect(() => {
@@ -38,11 +43,9 @@ export default function Layout({
     }
   }, []);
 
-
-
   return (
     <>
-      <Header user={user}/>
+      <Header user={user} />
       <main className="pageContent bg-white">
         {children}
       </main>

@@ -267,12 +267,16 @@ export default function TaskComponent({loaderData}:{loaderData?:Task}) {
   }, [slug])
 
   useEffect(() => {
-    getRecent(table, [{field:'addedBy',operator:'==',value:user.id}], '', false, 'createdAt', 'desc', 10).then(res => {
-      if (res.success) {
-        const data=res.data.map((item:any)=>({...item,date:fireDateParse(item.date)}))
-        setRecentPost(data)
-      }
-    })
+    if (user) {
+      getRecent(table, [{ field: 'addedBy', operator: '==', value: user.id }], '', false, 'createdAt', 'desc', 10).then(res => {
+        if (res.success) {
+          const data = res.data.map((item: any) => ({ ...item, date: fireDateParse(item.date) }))
+          setRecentPost(data)
+        }
+      })
+    }else{
+      setRecentPost([])
+    }
   }, [])
 
   const list = useMemo(() => {

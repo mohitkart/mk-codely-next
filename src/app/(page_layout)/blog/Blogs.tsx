@@ -96,7 +96,7 @@ export default function Blogs() {
     }).sort((a: any, b: any) => {
       return b.createdAt - a.createdAt
     })
-  }, [data, filters])
+  }, [data, filters,categories])
 
   const featuredPost = useMemo(() => {
     return list.filter((itm: any) => itm.featured)
@@ -151,7 +151,7 @@ export default function Blogs() {
           <button className={`cursor-pointer shine h-[45px] w-[100px] px-4 py-2 rounded-lg`}></button>
             </>:<>
             <button onClick={()=>setFilter(prev=>({...prev,category:''}))} className={`cursor-pointer px-4 py-2 rounded-full shadow-sm text-sm ${!filters.category?'bg-blue-600 text-white':'bg-gray-200 text-gray-700'}`}>All</button>
-            {categories.map((item:any,i:any)=>{
+            {categories.map((item:any)=>{
               return <button key={item.id}
               style={{
                 backgroundColor:item.id==filters.category?item.color:null
