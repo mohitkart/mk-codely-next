@@ -1,0 +1,74 @@
+.cm-editor{
+    background-color: transparent;
+}
+
+.code-line {
+     font-family: 'Source Code Pro', monospace;
+     display: block;
+     padding: 2px 0;
+ }
+
+ .line-number {
+     color: #64748b;
+     width: 40px;
+     text-align: right;
+     padding-right: 16px;
+     user-select: none;
+ }
+
+ .keyword {
+     color: #7c3aed;
+ }
+
+ .comment {
+     color: #64748b;
+ }
+
+ .string {
+     color: #059669;
+ }
+
+ .function {
+     color: #2563eb;
+ }
+
+ .code-container {
+     background: #0f172a;
+     border-radius: 8px;
+     overflow: hidden;
+ }
+
+ .code-header {
+     background: #1e293b;
+     padding: 12px 20px;
+     color: #e2e8f0;
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+ }
+
+ .code-content {
+     padding: 16px 0;
+     color: #cbd5e1;
+     overflow-x: auto;
+ }
+
+ .code-tab {
+     padding: 6px 12px;
+     background: #334155;
+     border-radius: 4px;
+     cursor: pointer;
+     font-size: 14px;
+ }
+
+ .code-tab.active {
+     background: #4f46e5;
+ }
+
+ .breadcrumb {
+     color: #64748b;
+ }
+
+ .breadcrumb a:hover {
+     color: #4f46e5;
+ }

@@ -2,12 +2,11 @@ import Link from "next/link";
 import { Fragment } from "react";
 
 type Props={
-  links:[
-    {
+  links: {
       name:string;
-      link:string;
-    }
-  ];
+      link?:string;
+      onClick?:()=>void;
+    }[];
   currentPage:string;
   className?:string;
 }
@@ -20,9 +19,16 @@ const Breadcrumb = ({ links, currentPage = "", className="px-4 lg:px-10 2xl:px-1
           {links.map((itm,i) => {
             return (
               <Fragment key={i}>
-                <Link className="text-[#605F5F] text-sm xl:text-md" href={itm.link}>
+              {itm.onClick?<>
+               <span className="text-[#605F5F] text-sm xl:text-md cursor-pointer" onClick={()=>itm?.onClick?itm?.onClick():null}>
+                  {itm.name}
+                </span>
+              </>:<>
+               <Link className="text-[#605F5F] text-sm xl:text-md" href={itm.link||''}>
                   {itm.name}
                 </Link>
+              </>}
+               
                 <span className="material-symbols-outlined">keyboard_arrow_right</span>
               </Fragment>
             );

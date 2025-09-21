@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+.shine {
+    background: #eee;
+    background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
+    background-size: 200% 100%;
+    animation: 1.5s shine linear infinite;
+    min-height: 20px;
+    border-radius: 5px;
+}
+
+.shine.shineCard {
+    height: 250px;
+}
+
+strong.shine {
+    display: block;
+    margin-bottom: 14px;
+}
+
+@keyframes shine {
+    to {
+        background-position-x: -200%;
+    }
+}
+
+.border {
+    border-color: #dddddd;
+}
+
+.border-t {
+    border-top-color: #dddddd;
+}
+
+.border-b {
+    border-bottom-color: #dddddd;
+}
+
+button {
+    cursor: pointer
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+.task-checkbox:checked+span {
+    text-decoration: line-through;
+    color: #9CA3AF;
+}
+
+.subtask-checkbox:checked+span {
+    text-decoration: line-through;
+    color: #9CA3AF;
+}
+
+.project-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.project-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.material-icons {
+    font-size: 18px;
+    vertical-align: middle;
+}
+
+.subtask-item {
+    transition: all 0.2s ease;
+}
+
+.subtask-item:hover {
+    background-color: #f9fafb;
+}

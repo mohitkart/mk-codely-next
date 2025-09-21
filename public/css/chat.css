@@ -1,0 +1,19 @@
+.dazh-chatWindow{
+    height: 400px;
+    width: 330px;
+}
+
+.dazh-chatWindow iframe{
+    height: 100% !important;
+    width: 100% !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    outline: 0 !important;
+}
+
+.dazh-chatHeaderIcon{
+    margin-left: auto;
+    display: block;
+    width: fit-content;
+    margin-bottom: 4px;
+}

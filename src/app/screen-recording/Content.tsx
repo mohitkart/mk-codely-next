@@ -19,7 +19,7 @@ type FilterType = {
 export default function ScreenRecording() {
   const table = 'recording'
   const user = useSelector((state: any) => state.user.data)
-  const model = `recording/${user.id}`
+  const model = `recording/${user?.id}`
   const query=useSearchParams()
   const router=useRouter()
   const navigate = (p='')=>{
@@ -209,7 +209,7 @@ export default function ScreenRecording() {
             createdAt: new Date().toISOString(),
             file: 'screen-recording.webm'
           }}
-            share={() =>user?shareLink():null}
+          share={user?shareLink:undefined}
           />
         </div>
 
@@ -266,7 +266,7 @@ export default function ScreenRecording() {
                       <span>{datepipeModel.datetime(recording.createdAt)}</span>
                     </div>
                     {/* <div className="flex items-center text-gray-500 text-sm mt-1">
-                            <span className="material-icons text-sm mr-1">storage</span>
+                            <span className="material-symbols-outlined text-sm mr-1">storage</span>
                             <span>42.5 MB</span>
                         </div> */}
                   </div>
@@ -291,12 +291,12 @@ export default function ScreenRecording() {
           {videoUrl ? <>
             <div className="bg-white rounded-xl shadow-md p-12 text-center mt-8">
               <div className="mx-auto w-24 h-24 rounded-full bg-indigo-100 flex items-center justify-center mb-6">
-                <span className="material-icons text-indigo-500 text-4xl">videocam</span>
+                <span className="material-symbols-outlined text-indigo-500 text-4xl">videocam</span>
               </div>
               <h3 className="text-2xl font-semibold text-gray-800 mb-2">No recordings yet</h3>
               <p className="text-gray-600 max-w-md mx-auto mb-6">Get started by creating your first screen recording. Capture your screen, webcam, or both with just a few clicks.</p>
               <button onClick={isRecording ? stopRecording : startRecording}
-                className={`flex items-center gap-2 ${isRecording ? "bg-red-600 hover:bg-red-700" : "bg-blue-500 hover:bg-blue-600"} text-white py-3 px-5 rounded-lg shadow-md transition duration-300`}>
+                className={`inline-sflex items-center gap-2 ${isRecording ? "bg-red-600 hover:bg-red-700" : "bg-blue-500 hover:bg-blue-600"} text-white py-3 px-5 rounded-lg shadow-md transition duration-300`}>
 
                 <span className="material-symbols-outlined">add_circle</span>Create Your First Recording
               </button>

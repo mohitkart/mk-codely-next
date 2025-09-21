@@ -15,6 +15,10 @@ export const loaderHtml = (p: boolean) => {
 
 export const capitalize = (str:string) => str ? str.replace(/\b\w/g, (char:string) => char.toUpperCase()) : '';
 
+export const truncate=(str:string='',length=150)=>{
+  return `${str?.slice(0,length)}${str.length>length?'...':''}`
+}
+
 export const copyClipboard=(text:any='')=>{
   navigator.clipboard.writeText(text);
 }
@@ -86,6 +90,7 @@ export const replaceUrl = ({
   const nextState = { additionalInformation: description };
   window.history.replaceState(nextState, nextTitle, u);
 };
+
 
 export const scrollId = (id:string) => {
   const element = document.getElementById(id);

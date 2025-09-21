@@ -7,6 +7,19 @@
 button{
   cursor: pointer;
 }
+
+.border {
+    border-color: #dddddd;
+}
+
+.border-t {
+    border-top-color: #dddddd;
+}
+
+.border-b {
+    border-bottom-color: #dddddd;
+}
+
 @import "tailwindcss";
 
 :root {
@@ -83,7 +96,7 @@ button {
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
-.material-icons {
+.material-symbols-outlined {
     font-size: 18px;
     vertical-align: middle;
 }

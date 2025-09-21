@@ -70,10 +70,10 @@ const router=useRouter()
         <li>
           <Link className="hover:text-blue-500" href="/html">Html</Link>
         </li>
-        {/* <li>
-          <Link className="hover:text-blue-500" to="/tasks">Tasks</Link>
-        </li>
         <li>
+          <Link className="hover:text-blue-500" href="/tasks">Tasks</Link>
+        </li>
+        {/* <li>
           <Link className="hover:text-blue-500" to="/music">Music</Link>
         </li> */}
         {/* <li className="relative">
