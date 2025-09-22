@@ -175,23 +175,31 @@ export const getQuery=(table:string,conditions:FirestoreConditions[]=[],count:nu
     }
   };
 
-  export const updateFire = async ({ table, payload }: AddUpdateProps) => {
-    try {
-      if (!payload.id) throw new Error("ID is required for update");
-      
-      const docRef = doc(db, table, payload.id);
-      const updateData = {
+export const updateFire = async ({ table, payload }: AddUpdateProps) => {
+  try {
+    if (!payload.id) throw new Error("ID is required for update");
+
+    const docRef = doc(db, table, payload.id);
+    const updateData = {
+      ...payload,
+      updatedAt: new Date()
+    };
+    delete updateData.id;
+
+    await updateDoc(docRef, updateData);
+    const rdata={
         ...payload,
-        updatedAt: new Date()
-      };
-      delete updateData.id;
-      
-      await updateDoc(docRef, updateData);
-      return { success: true, data: payload };
-    } catch (error) {
-      throw error;
-    }
-  };
+        updatedAt:updateData.updatedAt?.toISOString(),
+        date:updateData.date?.toISOString()
+      }
+    return {
+      success: true, 
+      data: rdata
+    };
+  } catch (error) {
+    throw error;
+  }
+};
 
   export const deleteFire = async ({ table, id }: { table: string; id: string }) => {
     try {

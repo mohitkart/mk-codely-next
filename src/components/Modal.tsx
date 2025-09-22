@@ -22,7 +22,7 @@ export default function Modal({
             className="modal fixed inset-0 z-[999] flex justify-center items-center bg-black/50 p-4"
           >
             <div
-              className={`relative w-full max-w-2xl max-h-[calc(100vh-4rem)] overflow-y-auto ${className} mx-auto`}
+              className={`relative w-full max-w-2xl overflow-y-auto ${className} mx-auto`}
             >
               <div className="relative bg-white rounded-xl shadow dark:bg-gray-700">
                 {title && (

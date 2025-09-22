@@ -82,6 +82,7 @@ const FireApi = (controllerRef: ControllerRef = { current: null }) => {
           break;
 
         case "put":
+          data.updatedBy = user?.id || null
           result = await updateFire({ table, payload: { ...data } });
           break;
 

@@ -13,7 +13,6 @@ export default function Detail() {
 
   useEffect(() => {
     if (slug) {
-      console.log("slug",slug)
       getDetail(table, [], slug).then(res => {
         if (res.success) {
           const data=res.data;

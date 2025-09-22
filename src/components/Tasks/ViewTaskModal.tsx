@@ -149,7 +149,7 @@ const ViewTaskModal = forwardRef<ViewTaskModalRef, ViewTaskModalProps>(({
         className='!max-w-[900px]'
         title="Task Details"
         body={<>
-          <div className="py-4 max-h-[calc(100vh-150px)] overflow-auto">
+          <div className="py-4 max-h-[calc(100vh-200px)] overflow-auto">
             {isParentLoading?<>
             <div className='shine h-[30px] mb-3'></div>
             </>:<>

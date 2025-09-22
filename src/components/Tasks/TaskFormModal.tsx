@@ -100,7 +100,7 @@ const TaskFormModal: React.FC<TaskFormModalProps> = ({ task, tasks = [], categor
          className='!max-w-[600px]'
         body={<>
           <form onSubmit={handleSubmit} className="">
-            <div className="py-4 max-h-[calc(100vh-150px)] overflow-auto">
+            <div className="py-4 max-h-[calc(100vh-200px)] overflow-auto">
               <div className="mb-4">
                 <label htmlFor="taskProject" className="block text-sm font-medium text-gray-700 mb-1">Project</label>
                 <OptionDropdown
