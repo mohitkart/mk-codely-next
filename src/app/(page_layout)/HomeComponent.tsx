@@ -24,7 +24,7 @@ export default function HomeComponent() {
     }
     const [filters, setFilter] = useState<FilterType>({})
     const getData = async () => {
-        const res = await get(table)
+        const res = await get(table,[{field:'status',operator:'==',value:'active'}])
         let data = []
         if (res.data) {
             data = res.data
