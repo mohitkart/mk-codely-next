@@ -13,29 +13,23 @@ const router=useRouter()
   }
 
   const dispatch=useDispatch()
-  const [unread,setUnread]=useState(0)
   const pathname=window.location.pathname
 
   const Logout=()=>{
     dispatch(logout())
   }
 
-  useEffect(() => {
-    // if (user) {
-    //   const messagesRef = firebaseModel.firestore().collection('chat')
-    //   var query1 = messagesRef
-    //     .where('sendTo', '==', user.id)
-    //     .where('read', '==',false)
-
-    //     const unsubscribe=query1.onSnapshot(snapshot => {
-    //     let length = snapshot.docs.length
-    //     setUnread(length||0)
-    //   }, err => {
-    //   })
-
-    //   return () => unsubscribe();
-    // }
-  }, [])
+  const usesMenus = [
+    {
+      name: 'Dashboard',
+      id: '/dashboard',
+      hide: !(user?.roleDetail?.name=='admin')
+    },
+    {
+      name: 'Logout',
+      id: 'logout'
+    }
+  ].filter(itm => !itm.hide)
 
   
   return <>
@@ -99,23 +93,11 @@ const router=useRouter()
         {user ? (
           <div className="">
             <OptionDropdown
+            showUnselect={false}
             className='!border-0'
               placeholder={`Welcome ${user.name}`}
               isSearch={false}
-              options={[
-                // {
-                //   name:'Dashboard',
-                //   id:'/dashboard'
-                // },
-                // {
-                //   name:'Calculation',
-                //   id:'/calculation'
-                // },
-                {
-                  name:'Logout',
-                  id:'logout'
-                }
-              ]}
+              options={usesMenus}
               onChange={(e:any)=>{
                 if(e=='logout'){
                   Logout()   

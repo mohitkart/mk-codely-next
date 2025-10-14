@@ -1,6 +1,6 @@
 // app/api/hello/route.ts
 import { encrypt } from "@/utils/crypto.server";
-import { getFire, updateFire } from "@/utils/firebase.utils";
+import { getFire, getIdFire, updateFire } from "@/utils/firebase.utils";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -51,9 +51,10 @@ export async function POST(req: Request) {
 
         data = { ...data, accessToken };
         delete data.password;
+        delete data.verificationCode;
 
         // 🔍 Fetch role details
-        const roleres = await getFire({ table: "role", id: data.role });
+        const roleres = await getIdFire({ table: "roles", id: data.role });
         data.roleDetail = roleres.data;
 
         response = { success: true, data };
