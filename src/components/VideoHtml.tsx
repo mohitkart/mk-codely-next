@@ -18,8 +18,7 @@ export default function VideoHtml({ src='', className = '', id = '', controls = 
       id={id}
       controls={controls}
     >
-      <source src={noImg('compressed/' + fileName())} type={`video/${extName()}`} />
-      <source src={noImg(fileName())} type={`video/${extName()}`} />
+      <source src={noImg(src)} type={`video/${extName()}`} />
     </video>
   </>
 }

@@ -1,4 +1,4 @@
-import envirnment from "@/envirnment";
+import imageModel from "./image.model";
 
 export const APP_NAME='Mk Codely'
 export const APP_DESCRIPTION='Code Snippet Library'
@@ -23,16 +23,9 @@ export const copyClipboard=(text:any='')=>{
   navigator.clipboard.writeText(text);
 }
 
-const getImage = (model: any, name: any = '') => {
-  model = model.replaceAll('/', '%2F')
-  if (name.includes('https')) return name
-  return `https://firebasestorage.googleapis.com/v0/b/${envirnment.firebase.storageBucket}/o/assets%2F${model}%2F${name}?alt=media`
-}
-
-export const noImg = (img:any='',model='blogs', defaultImg = '/img/placeholder.png') => {
+export const noImg = (img:any='', defaultImg = '/img/placeholder.png') => {
   let value = defaultImg;
-  if (img?.includes("https")) return img;
-  if (img) value = getImage(model,img);
+  if (img) value = imageModel.getImage(img)
   return value;
 };
 

@@ -16,8 +16,7 @@ export default function AudioHtml({ src='', className = '', id = '', controls = 
       controls={controls}
       id={id}
     >
-      <source src={noImg('compressed/' + fileName())} type={`audio/${extName()}`} />
-      <source src={noImg(fileName())} type={`audio/${extName()}`} />
+      <source src={noImg(src)} type={`audio/${extName()}`} />
     </audio>
   </>
 }
