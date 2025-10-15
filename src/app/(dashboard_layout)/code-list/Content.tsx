@@ -16,6 +16,7 @@ import packageModel from "@/utils/package";
 import { createBackup } from "@/utils/backup";
 import { fire } from "@/components/Swal";
 import { loaderHtml } from "@/utils/shared";
+import DebouncedInput from "@/components/DebouncedInput";
 
 export default function Content() {
     const user: any = useSelector((state: RootState) => state.user.data);
@@ -183,7 +184,7 @@ export default function Content() {
                 if (filters.package && item.package !== filters.package) return false;
 
                 if (filters.search) {
-                    const searchValue = filters.search.toLowerCase();
+                    const searchValue = filters.search.toLowerCase().trim();
                     const title = item.title?.toLowerCase() || '';
                     const description = item.description?.toLowerCase() || '';
                     if (!title.includes(searchValue) && !description.includes(searchValue))
@@ -226,9 +227,9 @@ export default function Content() {
 
                     <div className="relative flex-grow max-w-md">
                         <span className="material-symbols-outlined absolute left-3 top-3 text-gray-400">search</span>
-                        <input type="text" placeholder="Search..."
+                        <DebouncedInput type="text" placeholder="Search..."
                         value={filters.search}
-                        onChange={e=>filter({search:e.target.value})}
+                        onChange={e=>filter({search:e})}
                             className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                     </div>
 

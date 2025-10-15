@@ -1,7 +1,7 @@
 'use client'
 
 import MKTable, { MkTableColumn } from "@/components/MkTable";
-import { ADD_PAGE_NAME, PAGE_TABLE, PAGE_URL } from "./shared";
+import { ADD_PAGE_NAME, PAGE_NAME, PAGE_TABLE, PAGE_URL } from "./shared";
 import { useEffect, useMemo, useState } from "react";
 import datepipeModel from "@/utils/datepipemodel";
 import Link from "next/link";
@@ -12,6 +12,7 @@ import { FirestoreConditions } from "@/utils/firebase.utils";
 import { getColor } from "@/components/MkChart";
 import OptionDropdown from "@/components/OptionDropdown";
 import { statusList } from "@/utils/shared.utils";
+import packageModel from "@/utils/package";
 import { createBackup } from "@/utils/backup";
 import { fire } from "@/components/Swal";
 import { loaderHtml } from "@/utils/shared";
@@ -33,18 +34,19 @@ export default function Content() {
     const { deleteApi, isLoading: isActionLoading } = FireApi()
 
 
-    const remove=(id:any)=>{
+    const remove = (id: any) => {
         fire({
-            icon:'warning',
-            title:'Do you want to delete this?',cancelButtonText:'No',confirmButtonText:'Yes',showCancelButton:true}).then(res=>{
-            if(res.isConfirmed){
+            icon: 'warning',
+            title: 'Do you want to delete this?', cancelButtonText: 'No', confirmButtonText: 'Yes', showCancelButton: true
+        }).then(res => {
+            if (res.isConfirmed) {
                 loaderHtml(true)
-                deleteApi(PAGE_TABLE,id).then(res=>{
-                    if(res.success){
-                        const arr=list.filter((itm:any)=>itm.id!=id)
+                deleteApi(PAGE_TABLE, id).then(res => {
+                    if (res.success) {
+                        const arr = list.filter((itm: any) => itm.id != id)
                         setList(arr)
                     }
-                }).finally(()=>{
+                }).finally(() => {
                     loaderHtml(false)
                 })
             }
@@ -53,16 +55,27 @@ export default function Content() {
 
     const columns: MkTableColumn[] = [
         {
-            key: 'title', name: 'Title', sort: true,
+            key: 'name', name: 'Name', sort: true,
             render: (row) => {
-                return <span className="capitalize truncate max-w-[300px] inline-block" title={row?.title}>{row?.title}</span>
+                return <span className="capitalize">{row?.name}</span>
             }
         },
-
         {
-            key: 'category', name: 'Category',
+            key: 'email', name: 'Email', sort: true,
             render: (row) => {
-                return <>{categories.find(itm => itm.id == row?.category)?.name || '--'}</>
+                return <span className="">{row?.email}</span>
+            }
+        },
+        {
+            key: 'role', name: 'Role',
+            render: (row) => {
+                return <>{categories.find(itm => itm.id == row?.role)?.name || row.role || '--'}</>
+            }
+        },
+        {
+            key: 'package', name: 'package',
+            render: (row) => {
+                return <span className='capitalize'>{row.package}</span>
             }
         },
         {
@@ -96,14 +109,14 @@ export default function Content() {
             render: (itm) => {
                 return <>
                     <div className="flex space-x-2">
-                        <Link href={`blog/${itm.id}`} target="_blank" className="action-btn" title="View">
+                        <Link href={`html/${itm.id}`} target="_blank" className="action-btn" title="View">
                             <span className="material-symbols-outlined">visibility</span>
                         </Link>
-                       <Link href={`${PAGE_URL}/edit/${itm.id}`} className="action-btn" title="View">
+                        <Link href={`${PAGE_URL}/edit/${itm.id}`} className="action-btn" title="View">
                             <span className="material-symbols-outlined">edit</span>
                         </Link>
                         <button className="action-btn" title="Delete"
-                        onClick={()=>remove(itm.id)}
+                            onClick={() => remove(itm.id)}
                         >
                             <span className="material-symbols-outlined">delete</span>
                         </button>
@@ -131,7 +144,7 @@ export default function Content() {
     }
 
     const getCategories = async () => {
-        const res = await getCategory('categories', [{ field: 'type', operator: '==', value: 'blog' }])
+        const res = await getCategory('roles', [])
         let data = []
         if (res.data) {
             data = res.data.map((itm: any, i: any) => ({ ...itm, color: getColor(i) })).sort((a: any, b: any) => {
@@ -172,15 +185,15 @@ export default function Content() {
         const key = filters.sortBy?.split(' ')[0] || 'createdAt';
         return list
             ?.filter((item: any) => {
-                if (filters.category && item.category !== filters.category) return false;
+                if (filters.category && item.role !== filters.category) return false;
                 if (filters.status && item.status !== filters.status) return false;
                 if (filters.package && item.package !== filters.package) return false;
 
                 if (filters.search) {
                     const searchValue = filters.search.toLowerCase().trim();
-                    const title = item.title?.toLowerCase() || '';
-                    const description = item.description?.toLowerCase() || '';
-                    if (!title.includes(searchValue) && !description.includes(searchValue))
+                    const name = item.name?.toLowerCase() || '';
+                    const email = item.email?.toLowerCase() || '';
+                    if (!name.includes(searchValue) && !email.includes(searchValue))
                         return false;
                 }
 
@@ -204,13 +217,13 @@ export default function Content() {
             id: 'createdAt desc'
         },
         {
-            name: 'Title - A-Z',
-            id: 'title desc'
+            name: 'Name - A-Z',
+            id: 'name desc'
         },
     ]
 
-    const exportFuc=()=>{
-        createBackup({table:PAGE_TABLE,data:list})
+    const exportFuc = () => {
+        createBackup({ table: PAGE_TABLE, data: list })
     }
 
     return (
@@ -221,8 +234,8 @@ export default function Content() {
                     <div className="relative flex-grow max-w-md">
                         <span className="material-symbols-outlined absolute left-3 top-3 text-gray-400">search</span>
                         <DebouncedInput type="text" placeholder="Search..."
-                        value={filters.search}
-                        onChange={e=>filter({search:e})}
+                            value={filters.search}
+                            onChange={e => filter({ search: e })}
                             className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                     </div>
 
@@ -232,7 +245,7 @@ export default function Content() {
                             <span className="material-symbols-outlined mr-2">add</span>
                             Add {ADD_PAGE_NAME}
                         </Link>
-                        <button onClick={()=>exportFuc()} className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 px-4 py-3 rounded-lg flex items-center transition-colors">
+                        <button onClick={() => exportFuc()} className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 px-4 py-3 rounded-lg flex items-center transition-colors">
                             <span className="material-symbols-outlined mr-2">download</span>
                             Export
                         </button>
@@ -252,13 +265,21 @@ export default function Content() {
                         />
                     </div>
 
-                    
-                     <div className="min-w-[250px]">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+
+                    <div className="min-w-[250px]">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Role</label>
                         <OptionDropdown
                             value={filters.category}
                             options={categories}
                             onChange={e => filter({ category: e })}
+                        />
+                    </div>
+                    <div className="min-w-[170px]">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Package</label>
+                        <OptionDropdown
+                            value={filters.package}
+                            options={packageModel.list}
+                            onChange={e => filter({ package: e })}
                         />
                     </div>
                     <div>
