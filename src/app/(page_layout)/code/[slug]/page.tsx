@@ -35,7 +35,7 @@ export async function generateMetadata(
   const title = blog.title
   const description = blog.short_description
   const data = {
-    title: title,
+    title: `${title} -- ${APP_NAME}`,
     description: description,
     openGraph: {
       title: title,

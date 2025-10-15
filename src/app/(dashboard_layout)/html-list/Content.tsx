@@ -102,7 +102,7 @@ export default function Content() {
             render: (itm) => {
                 return <>
                     <div className="flex space-x-2">
-                        <Link href={`code/${itm.id}`} target="_blank" className="action-btn" title="View">
+                        <Link href={`html/${itm.id}`} target="_blank" className="action-btn" title="View">
                             <span className="material-symbols-outlined">visibility</span>
                         </Link>
                        <Link href={`${PAGE_URL}/edit/${itm.id}`} className="action-btn" title="View">

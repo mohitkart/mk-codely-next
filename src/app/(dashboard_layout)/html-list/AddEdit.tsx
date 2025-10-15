@@ -17,10 +17,13 @@ type FormType = {
   title: string
   short_description: string
   description: string
+  html: string
+  css: string
+  scss: string
+  js: string
   status: string
   category: string
   package: string
-  code: { code: string, ext?: string, name: string, uid?: string }[]
 }
 
 
@@ -36,37 +39,14 @@ export default function AddEdit() {
     control,
     reset: resetForm,
     formState: { errors, defaultValues },
-  } = useForm<FormType>({ defaultValues: { title: '', description: '', status: '', category: '', package: '', code: [], short_description: '' } })
+  } = useForm<FormType>({ defaultValues: { title: '', description: '', status: '', category: '', package: '', short_description: '',html: '',
+  css: '',
+  scss: '',
+  js: '' } })
   const { get: getDetail, isLoading: isDetailLoading } = FireApi()
   const { get: getCategory, isLoading: categoryLoading } = FireApi()
   const { post, isLoading: formLoading, put } = FireApi()
 
-
-
-  const { fields: codes, append: appendCode, move: moveCode, remove: removeCode } = useFieldArray({
-    control,
-    name: "code",
-  });
-
-  // store the index of the dragged item
-  const [dragIndex, setDragIndex] = useState<number | null>(null);
-
-  // handle drag start
-  const handleDragStart = (index: number) => {
-    setDragIndex(index);
-  };
-
-  // handle drag over
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault(); // allow dropping
-  };
-
-  // handle drop
-  const handleDrop = (index: number) => {
-    if (dragIndex === null || dragIndex === index) return;
-    moveCode(dragIndex, index);
-    setDragIndex(null);
-  };
 
 
   const [categories, setCategories] = useState<any[]>([])
@@ -89,10 +69,6 @@ export default function AddEdit() {
         loaderHtml(false)
       })
     }
-  }
-
-  const addCode = () => {
-    appendCode({ code: '', ext: '', name: '', uid: getRandomCode(12) })
   }
 
   const getCategories = async () => {
@@ -122,7 +98,6 @@ export default function AddEdit() {
           Object.keys(defaultValues as object).map(key => {
             payload[key] = data[key]
           })
-          payload.code = typeof data.code == 'object' ? data.code : JSON.parse(data?.code)
           resetForm(payload)
         }
         loaderHtml(false)
@@ -256,87 +231,85 @@ export default function AddEdit() {
             </div>
 
             <div>
-              <div className="flex justify-between items-center mb-4">
-                <label className="block text-sm font-medium text-gray-700 flex items-center">
-                  <span className="material-symbols-outlined text-gray-500 text-sm mr-1">code</span>
-                  Code Array
-                </label>
-                <button type="button"
-                  onClick={() => addCode()}
-                  className="flex items-center space-x-1 bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-2 rounded-lg transition duration-200">
-                  <span className="material-symbols-outlined text-sm">add</span>
-                  <span>Add Code</span>
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                {codes.map((item, i) => {
-                  return <div key={i}
-                    className={`bg-gray-50 p-4 rounded-lg border border-gray-200 fade-in ${dragIndex === i ? "bg-gray-200" : "bg-gray-50"
-                      }`}
-                    draggable
-                    onDragStart={() => handleDragStart(i)}
-                    onDragOver={handleDragOver}
-                    onDrop={() => handleDrop(i)}
-                  >
-                    <div className="flex justify-between items-center mb-3">
-                      <h3 className="font-medium text-gray-700">Code #{item.uid}</h3>
-                      <div className="flex space-x-2">
-                        <button type="button" onClick={() => removeCode(i)} className="text-red-600 hover:text-red-800 transition duration-200">
-                          <span className="material-symbols-outlined text-sm">delete</span>
-                        </button>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">Name</label>
-                        <input type="text"
-                          className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
-                          placeholder="Enter name"
-                          {...register(`code.${i}.name` as const)}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">Extension</label>
-                        <input type="text"
-                          className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
-                          placeholder="Enter extension"
-                          {...register(`code.${i}.ext` as const)}
-                        />
-                      </div>
-                      <div className="md:col-span-2">
-                        <label className="block text-xs font-medium text-gray-500 mb-1">Code</label>
-                        <Controller
-                          name={`code.${i}.code`}
-                          control={control}
-                          rules={{ required: true }}
-                          render={({ field }) => {
-                            return <CodeEditor
-                              value={field.value}
-                              onChange={e => {
-                                setValue(`code.${i}.code`, e)
-                              }}
-                            />
-                          }}
-                        />
-                        {errors.code?.[i]?.code && <span className="text-red-500">This field is required</span>}
-                      </div>
-                    </div>
-                  </div>
-                })}
-
-
-                {!codes.length ? <>
-                  <div className="text-center py-8 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
-                    <span className="material-symbols-outlined text-gray-400 text-4xl mb-2">code_off</span>
-                    <p className="text-lg">No codes added yet</p>
-                    <p className="text-sm mt-1">Click &quot;Add Code&quot; to create your first code entry</p>
-                  </div>
-                </> : <></>}
-              </div>
+              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <span className="material-symbols-outlined text-gray-500 text-sm mr-1">code</span>
+                Html
+              </label>
+              <Controller
+                name={'html'}
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => {
+                  return <CodeEditor
+                    value={field.value}
+                    onChange={(e) => {
+                      setValue('html', e)
+                    }}
+                  />
+                }}
+              />
+              {errors.html && <span className="text-red-500">This field is required</span>}
             </div>
-
+             <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <span className="material-symbols-outlined text-gray-500 text-sm mr-1">code</span>
+                Css
+              </label>
+              <Controller
+                name={'css'}
+                control={control}
+                rules={{ }}
+                render={({ field }) => {
+                  return <CodeEditor
+                    value={field.value}
+                    onChange={(e) => {
+                      setValue('css', e)
+                    }}
+                  />
+                }}
+              />
+              {errors.css && <span className="text-red-500">This field is required</span>}
+            </div>
+             <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <span className="material-symbols-outlined text-gray-500 text-sm mr-1">code</span>
+                Scss
+              </label>
+              <Controller
+                name={'scss'}
+                control={control}
+                rules={{ }}
+                render={({ field }) => {
+                  return <CodeEditor
+                    value={field.value}
+                    onChange={(e) => {
+                      setValue('scss', e)
+                    }}
+                  />
+                }}
+              />
+              {errors.scss && <span className="text-red-500">This field is required</span>}
+            </div>
+<div>
+              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <span className="material-symbols-outlined text-gray-500 text-sm mr-1">code</span>
+                Js
+              </label>
+              <Controller
+                name={'js'}
+                control={control}
+                rules={{ }}
+                render={({ field }) => {
+                  return <CodeEditor
+                    value={field.value}
+                    onChange={(e) => {
+                      setValue('js', e)
+                    }}
+                  />
+                }}
+              />
+              {errors.js && <span className="text-red-500">This field is required</span>}
+            </div>
 
             <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-6 border-t border-gray-200">
               <Link href={`${PAGE_URL}`} type="button"

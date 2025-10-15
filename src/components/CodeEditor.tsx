@@ -1,6 +1,6 @@
 import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface props {
   value: any,
@@ -11,6 +11,12 @@ interface props {
 
 export default function CodeEditor({ value, height = '300px', onChange, disabled=false }: props) {
   const [code, setCode] = useState(value);
+
+  useEffect(()=>{
+    if(value!=code){
+      setCode(value)
+    }
+  },[value])
 
   return (
     <CodeMirror
