@@ -113,7 +113,18 @@ export default function AddEdit() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
 
           <form className="p-6 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-
+  <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <span className="material-symbols-outlined text-gray-500 text-sm mr-1">title</span>
+                English *
+              </label>
+              <input type="text"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                placeholder="Enter title"
+                {...register("english")}
+                required />
+              {errors.english && <span>This field is required</span>}
+            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
                 <span className="material-symbols-outlined text-gray-500 text-sm mr-1">title</span>
@@ -126,18 +137,7 @@ export default function AddEdit() {
                 required />
               {errors.hindi && <span>This field is required</span>}
             </div>
-             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-                <span className="material-symbols-outlined text-gray-500 text-sm mr-1">title</span>
-                English *
-              </label>
-              <input type="text"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
-                placeholder="Enter title"
-                {...register("english")}
-                required />
-              {errors.english && <span>This field is required</span>}
-            </div>
+           
 
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
