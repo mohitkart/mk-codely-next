@@ -1,24 +1,26 @@
 'use client'
+import CodeEditor from "@/components/CodeEditor"
 import { getColor } from "@/components/MkChart"
 import OptionDropdown from "@/components/OptionDropdown"
 import FireApi from "@/utils/firebaseApi.utils"
+import packageModel from "@/utils/package"
 import { loaderHtml } from "@/utils/shared"
 import { statusList } from "@/utils/shared.utils"
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import { useForm, SubmitHandler, Controller } from "react-hook-form"
+import { useForm, SubmitHandler, useFieldArray, Controller } from "react-hook-form"
 import { ADD_PAGE_NAME, PAGE_TABLE, PAGE_URL } from "./shared"
 import Link from "next/link"
 import Editor from "@/components/Editor"
 import UploadFile from "@/components/UploadFile"
 
 type FormType = {
-  title: string
+  english: string
   short_description: string
   description: string
+  hindi: string
   status: string
-  category: string
-  image: string
+  image:string
 }
 
 
@@ -34,17 +36,18 @@ export default function AddEdit() {
     control,
     reset: resetForm,
     formState: { errors, defaultValues },
-  } = useForm<FormType>({ defaultValues: { title: '', description: '', status: '', category: '', short_description: '', image: '' } })
+  } = useForm<FormType>({ defaultValues: { english: '', description: '', status: '', hindi: '', short_description: '',image:'' } })
   const { get: getDetail, isLoading: isDetailLoading } = FireApi()
   const { get: getCategory, isLoading: categoryLoading } = FireApi()
   const { post, isLoading: formLoading, put } = FireApi()
+
 
 
   const [categories, setCategories] = useState<any[]>([])
   const onSubmit: SubmitHandler<FormType> = (data) => {
     loaderHtml(true)
     if (slug) {
-      put(PAGE_TABLE, { ...data, id: slug}).then(res => {
+      put(PAGE_TABLE, { ...data, id: slug }).then(res => {
         if (res.success) {
           router.push(`${PAGE_URL}`)
         }
@@ -63,7 +66,7 @@ export default function AddEdit() {
   }
 
   const getCategories = async () => {
-    const res = await getCategory('categories', [{ field: 'type', operator: '==', value: 'blog' }])
+    const res = await getCategory('categories', [{ field: 'type', operator: '==', value: 'code' }])
     let data = []
     if (res.data) {
       data = res.data.map((itm: any, i: any) => ({ ...itm, color: getColor(i) })).sort((a: any, b: any) => {
@@ -114,41 +117,30 @@ export default function AddEdit() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
                 <span className="material-symbols-outlined text-gray-500 text-sm mr-1">title</span>
-                Title *
+                Hindi *
               </label>
               <input type="text"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
                 placeholder="Enter title"
-                {...register("title")}
+                {...register("hindi")}
                 required />
-              {errors.title && <span>This field is required</span>}
+              {errors.hindi && <span>This field is required</span>}
+            </div>
+             <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <span className="material-symbols-outlined text-gray-500 text-sm mr-1">title</span>
+                English *
+              </label>
+              <input type="text"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                placeholder="Enter title"
+                {...register("english")}
+                required />
+              {errors.english && <span>This field is required</span>}
             </div>
 
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-                  <span className="material-symbols-outlined text-gray-500 text-sm mr-1">category</span>
-                  Category *
-                </label>
-                <Controller
-                  name={`category`}
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field }) => {
-                    return <OptionDropdown
-                      value={field.value}
-                      onChange={e => {
-                        setValue('category', e)
-                      }}
-                      options={categories}
-                      isLoading={categoryLoading}
-                    />
-                  }}
-                />
-                {errors.category && <span className="text-red-500">This field is required</span>}
-              </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
                   <span className="material-symbols-outlined text-gray-500 text-sm mr-1">toggle_on</span>
@@ -174,6 +166,7 @@ export default function AddEdit() {
                 {errors.status && <span className="text-red-500">This field is required</span>}
               </div>
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
                 <span className="material-symbols-outlined text-gray-500 text-sm mr-1">description</span>
@@ -192,7 +185,7 @@ export default function AddEdit() {
               <Controller
                 name={'description'}
                 control={control}
-                rules={{ required: true }}
+                rules={{}}
                 render={({ field }) => {
                   return <Editor
                     className=''
@@ -205,7 +198,8 @@ export default function AddEdit() {
               />
               {errors.description && <span className="text-red-500">This field is required</span>}
             </div>
-            <div>
+
+             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
                 <span className="material-symbols-outlined text-gray-500 text-sm mr-1">image</span>
                 Image

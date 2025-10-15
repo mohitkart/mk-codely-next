@@ -34,6 +34,7 @@ export default function Layout({
     { id: 'code-list', label: 'Code', icon: <span className="material-symbols-outlined text-lg">dashboard</span>, section: 'Main Menu' },
     { id: 'html-list', label: 'Html', icon: <span className="material-symbols-outlined text-lg">dashboard</span>, section: 'Main Menu' },
     { id: 'blog-list', label: 'Blog', icon: <span className="material-symbols-outlined text-lg">dashboard</span>, section: 'Main Menu' },
+    { id: 'dictionary-list', label: 'Dictionary', icon: <span className="material-symbols-outlined text-lg">dashboard</span>, section: 'Main Menu' },
 
     // Settings
     { id: 'profile', label: 'Profile', icon: <span className="material-symbols-outlined text-lg">dashboard</span>, section: 'Settings' },
