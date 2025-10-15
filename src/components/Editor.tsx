@@ -24,7 +24,6 @@ const EditorHtml = ({ Quill, width = "100%",
     className, onChange = (_: any) => { } }: EditorHtmlProps) => {
     const editorRef = useRef<HTMLDivElement>(null);
     const quillRef = useRef<any>(null);
-
     useEffect(() => {
         if (editorRef.current && !quillRef.current) {
             quillRef.current = new Quill(editorRef.current, {
@@ -41,9 +40,6 @@ const EditorHtml = ({ Quill, width = "100%",
                 },
             });
 
-            // Set initial value
-            quillRef.current.root.innerHTML = value;
-
             // Change handler
             quillRef.current.on('editor-change', () => {
                 if (onChange) {
@@ -53,7 +49,18 @@ const EditorHtml = ({ Quill, width = "100%",
                 }
             });
         }
+       
     }, []);
+
+    useEffect(() => {
+        if (quillRef.current) {
+             const html = quillRef.current!.root.innerHTML;
+            // Set initial value
+            if ((value!=html)) {
+                quillRef.current.root.innerHTML = value;
+            }
+        }
+    }, [value])
 
     return <div className={className}>
         <div ref={editorRef} style={{ width, height }} />

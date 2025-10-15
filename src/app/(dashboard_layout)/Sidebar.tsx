@@ -1,5 +1,5 @@
 import { MenuItem } from '@/types/dashboard';
-import { APP_NAME } from '@/utils/shared';
+import { APP_NAME, noImg } from '@/utils/shared';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import React from 'react';
@@ -97,13 +97,13 @@ const Sidebar: React.FC<SidebarProps> = ({
               <div className="flex-shrink-0">
                 <img 
                   className="h-10 w-10 rounded-full" 
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" 
+                  src={noImg(user?.image)}
                   alt="User profile" 
                 />
               </div>
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-700">John Doe</p>
-                <p className="text-xs font-medium text-gray-500">Administrator</p>
+                <p className="text-sm font-medium text-gray-700 capitalize">{user?.name}</p>
+                <p className="text-xs font-medium text-gray-500 capitalize">{user?.roleDetail?.name}</p>
               </div>
               <button className="ml-auto text-gray-400 hover:text-gray-500">
                 <span className="material-symbols-outlined">more_vert</span>

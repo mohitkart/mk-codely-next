@@ -8,7 +8,6 @@ import FireApi from '@/utils/firebaseApi.utils';
 import { getRandomCode, loaderHtml } from '@/utils/shared';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/redux/store';
-import CodeEditor from '../CodeEditor';
 import Editor from '../Editor';
 
 interface TaskFormModalProps {

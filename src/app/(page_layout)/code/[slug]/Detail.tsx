@@ -30,7 +30,7 @@ export default function Detail() {
       gtCatDetail()
       let code = loaderData?.code
       if (code) {
-        code = JSON.parse(code)
+        code = typeof code=='object'?code:JSON.parse(code)
         setCode(code)
       }
     }

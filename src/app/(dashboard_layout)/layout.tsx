@@ -31,6 +31,7 @@ export default function Layout({
     // Main Menu
     { id: 'dashboard', label: 'Dashboard', icon: <span className="material-symbols-outlined text-lg">dashboard</span>, section: 'Main Menu' },
     { id: 'users', label: 'User Management', icon: <span className="material-symbols-outlined text-lg">dashboard</span>, section: 'Main Menu' },
+    { id: 'code-list', label: 'Code', icon: <span className="material-symbols-outlined text-lg">dashboard</span>, section: 'Main Menu' },
 
     // Settings
     { id: 'profile', label: 'Profile', icon: <span className="material-symbols-outlined text-lg">dashboard</span>, section: 'Settings' },
