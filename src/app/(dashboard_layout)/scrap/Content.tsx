@@ -1,8 +1,6 @@
 'use client'
-import { useEffect, useMemo, useState } from "react";
+import {useState } from "react";
 import FireApi from "@/utils/firebaseApi.utils";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
 import { loaderHtml } from "@/utils/shared";
 import { toast } from "react-toastify";
 export default function Content() {
