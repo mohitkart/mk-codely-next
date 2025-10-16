@@ -57,7 +57,20 @@ const UploadFile= ({ multiple = false, modal = 'default', type = 'image', label 
 
     useEffect(() => {
         if(value!=image){
-            setImage(value)
+            let v
+            if(multiple){
+                v=value.map((itm:any)=>{
+                    const i=itm.split('/')
+                    let v=`assets/${modal}/${itm}`
+                    if(i.length>1) v=itm
+                    return v
+                })
+            }else{
+                const i=value.split('/')
+                v=`assets/${modal}/${value}`
+                if(i.length>1) v=value
+            }
+            setImage(v)
         }
     }, [value])
 

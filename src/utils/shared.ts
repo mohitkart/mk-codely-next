@@ -51,7 +51,7 @@ export const isNumber = (e:any) => {
 };
 
 export function getRandomCode(length = 5) {
-  const letters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  const letters = '0123456789-ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz';
   let code = '';
   for (let i = 0; i < length; i++) {
     code += letters[Math.floor(Math.random() * letters.length)];

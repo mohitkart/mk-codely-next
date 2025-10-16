@@ -1,6 +1,11 @@
 .bg-primary {
   background-color: #155dfc;
 }
+
+.ancr-color a{
+  color: #155dfc;
+}
+
 .text-primary {
   color: #155dfc;
 }

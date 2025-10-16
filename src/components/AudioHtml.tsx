@@ -7,7 +7,7 @@ export default function AudioHtml({ src='', className = '', id = '', controls = 
   }
   const extName = () => {
     const file = fileName()
-    return file.split('.')?.pop()
+    return file.split('.')?.pop()?.split('?')?.[0]
   }
 
   return <>
