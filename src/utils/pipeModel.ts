@@ -1,6 +1,4 @@
 function currency(num:number,cf=',') {
-   // let currency=c
-   const currency=''
     let value='0'
     if(num){
       value=Number(num).toFixed(2)
@@ -16,7 +14,7 @@ function currency(num:number,cf=',') {
       }
     } 
     
-    return currency?`${value} ${currency}`:`$${value}  `
+    return `₹${value}`
  }
 
  function number(num:number,nofloat=false) {

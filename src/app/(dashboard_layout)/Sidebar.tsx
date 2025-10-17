@@ -1,5 +1,6 @@
 import { MenuItem } from '@/types/dashboard';
 import { APP_NAME, noImg } from '@/utils/shared';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import React from 'react';
@@ -54,7 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div className="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center">
               <span className="material-symbols-outlined text-white text-lg">dashboard</span>
             </div>
-            <span className="ml-3 text-xl font-semibold text-gray-800">{APP_NAME}</span>
+            <Link href="/" className="ml-3 text-xl font-semibold text-gray-800">{APP_NAME}</Link>
           </div>
         </div>
         

@@ -257,7 +257,7 @@ const FormControl = memo(function FormControl({
           <input
             type="text"
             name={name}
-            className="relative shadow-box bg-white w-full rounded-lg h-10 flex items-center gap-2 z-9 overflow-hidden px-2"
+            className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required={required}
             placeholder={placeholder}
             value={value || ""}
@@ -272,7 +272,7 @@ const FormControl = memo(function FormControl({
             <div className="flex">
               <input
                 type="text"
-                className="relative shadow-box bg-white w-full rounded-lg h-10 flex items-center gap-2 overflow-hidden px-2"
+                className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder={placeholder}
                 value={text}
                 autoComplete="off"
@@ -348,7 +348,7 @@ const FormControl = memo(function FormControl({
           <input
             type={type}
             name={name}
-            className="relative shadow-box bg-white w-full rounded-lg h-10 flex items-center gap-2 overflow-hidden px-2"
+            className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required={required}
             placeholder={placeholder}
             value={value || ""}
