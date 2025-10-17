@@ -80,9 +80,9 @@ const router=useRouter()
             ) : null}
           </Link>
         </li> */}
-        {/* <li>
-          <Link className="hover:text-blue-500" to="/expenses">Expenses</Link>
-        </li> */}
+        <li>
+          <Link className="hover:text-blue-500" href="/expenses">Expenses</Link>
+        </li>
         <li>
           <Link className="hover:text-blue-500" href="/screen-recording">Screen Recording</Link>
         </li>

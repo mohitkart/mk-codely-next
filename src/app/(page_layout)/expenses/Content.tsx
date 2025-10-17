@@ -15,6 +15,7 @@ import pipeModel from "@/utils/pipeModel";
 import DebouncedInput from "@/components/DebouncedInput";
 import Modal from "@/components/Modal";
 import AddEdit from "./AddEdit";
+import ExpenseTabs from "./ExpenseTabs";
 
 export type ExpenseForm = {
   id?: string | null
@@ -275,6 +276,10 @@ export default function Content() {
         </div>
 
       </header>
+
+      <div className="mb-3">
+<ExpenseTabs/>
+      </div>
 
 
 

@@ -2,12 +2,12 @@
 
 import { RootState } from "@/redux/store";
 import FireApi from "@/utils/firebaseApi.utils";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { EXPENSE_STATUS_LIST, PAGE_TABLE } from "./shared";
+import { ADD_PAGE_NAME, EXPENSE_STATUS_LIST, PAGE_TABLE } from "./shared";
 import { CategoryType, ExpenseForm, PersonType } from "./Content";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { loaderHtml } from "@/utils/shared";
+import { getRandomCode, loaderHtml } from "@/utils/shared";
 import OptionDropdown from "@/components/OptionDropdown";
 import FormControl from "@/components/FormControl";
 
@@ -34,6 +34,14 @@ export default function AddEdit({ detail, action,persons,categories}: ModalType)
   const { post, isLoading: formLoading, put } = FireApi()
 
   const onSubmit: SubmitHandler<ExpenseForm> = (data) => {
+    if(!user){
+      if (detail?.id) {
+        action({ action: 'submit', value: { ...data, id: detail?.id } })
+      }else{
+        action({ action: 'submit', value: { ...data, id: getRandomCode(12),createdAt:new Date().toISOString() } })
+      }
+      return
+    }
     loaderHtml(true)
     data.date=data.date?new Date(data.date):null
     if (detail?.id) {
@@ -47,7 +55,7 @@ export default function AddEdit({ detail, action,persons,categories}: ModalType)
     } else {
       post(PAGE_TABLE, data).then(res => {
         if (res.success) {
-          action({ action: 'submit', value: { ...data, id: res.data } })
+          action({ action: 'submit', value: { ...data, id: res.data.id } })
         }
       }).finally(() => {
         loaderHtml(false)
@@ -198,7 +206,7 @@ export default function AddEdit({ detail, action,persons,categories}: ModalType)
       <div className="flex space-x-3">
         <button type="submit" id="submit-btn"
           className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200 flex items-center justify-center">
-          {detail?.id ? 'Edit' : 'Add'} Expense
+          {detail?.id ? 'Edit' : 'Add'} {ADD_PAGE_NAME}
         </button>
         <button type="button" id="cancel-btn" className="hidden bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 transition duration-200">
           Cancel
