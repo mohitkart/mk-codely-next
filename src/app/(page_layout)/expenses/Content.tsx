@@ -16,6 +16,8 @@ import DebouncedInput from "@/components/DebouncedInput";
 import Modal from "@/components/Modal";
 import AddEdit from "./AddEdit";
 import ExpenseTabs from "./ExpenseTabs";
+import { createBackup } from "@/utils/backup";
+import Balance from "./Balance";
 
 export type ExpenseForm = {
   id?: string | null
@@ -31,13 +33,13 @@ export type ExpenseForm = {
 export type CategoryType = {
   id: string | null
   name: string
-  color:string
+  color: string
 }
 
 export type PersonType = {
   id: string | null
   name: string
-  color:string
+  color: string
 }
 
 export default function Content() {
@@ -46,6 +48,7 @@ export default function Content() {
   const [categories, setCategories] = useState<CategoryType[]>([])
   const [persons, setPersons] = useState<PersonType[]>([]);
   const [addeditModal, setAddeditModal] = useState<any>();
+  const [balanceModal, setBalanceModal] = useState<any>();
   const [filters, setFilters] = useState({
     search: '',
     sortBy: 'createdAt desc',
@@ -244,7 +247,7 @@ export default function Content() {
     if (e.action == 'submit') {
       if (addeditModal?.id) {
         const arr: any[] = [...list]
-        const index = arr.map(itm=>itm.id).indexOf(addeditModal?.id)
+        const index = arr.map(itm => itm.id).indexOf(addeditModal?.id)
         arr[index] = {
           ...arr[index],
           ...e.value
@@ -258,10 +261,14 @@ export default function Content() {
     }
   }
 
+  const exportFuc = () => {
+    createBackup({ table: PAGE_TABLE, data: list })
+  }
+
   return <>
     <div className="container mx-auto px-4 py-8">
       <header className="mb-8">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <div>
             <h1 className="text-3xl font-bold text-gray-800">{PAGE_NAME}</h1>
             <p className="text-gray-600 mt-2">Manage your {ADD_PAGE_NAME} efficiently</p>
@@ -269,16 +276,20 @@ export default function Content() {
 
           <button type="button"
             onClick={() => add()}
-            className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200 flex items-center justify-center">
+            className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200 flex items-center justify-center ml-auto">
             <span className="material-symbols-outlined mr-2 text-sm">add</span>
             Add {ADD_PAGE_NAME}
+          </button>
+          <button onClick={() => exportFuc()} className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 px-4 py-3 rounded-lg flex items-center transition-colors">
+            <span className="material-symbols-outlined mr-2">download</span>
+            Export
           </button>
         </div>
 
       </header>
 
       <div className="mb-3">
-<ExpenseTabs/>
+        <ExpenseTabs />
       </div>
 
 
@@ -335,7 +346,11 @@ export default function Content() {
                   Reset
                 </button>
               </> : <></>}
-
+              <button type="button"
+                onClick={() => setBalanceModal(true)}
+                className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200 flex items-center justify-center">
+                Balances
+              </button>
             </div>
           </div>
 
@@ -372,7 +387,7 @@ export default function Content() {
                       <span className="material-symbols-outlined align-text-bottom text-sm mr-1">group</span>
                       Shared with: {item.personsDetail?.map((itm: any) => itm?.name)?.sort()?.join(', ')}
                     </div>
-                      <div className="text-sm text-gray-600">
+                    <div className="text-sm text-gray-600">
                       <span className="material-symbols-outlined align-text-bottom text-sm mr-1">folder</span>
                       Category: {item?.categoryDetail?.name || '--'}
                     </div>
@@ -380,7 +395,7 @@ export default function Content() {
                   <div className="text-right">
                     <div className="text-lg font-semibold text-gray-800 mb-1">{pipeModel.currency(item.price)}</div>
                     <div className="text-sm text-gray-500">{datepipeModel.datetime(item.date)}</div>
-                    <div className="text-lg font-semibold text-gray-400 mb-1">{pipeModel.currency(item.price/item.personsDetail?.length)}</div>
+                    <div className="text-lg font-semibold text-gray-400 mb-1">{pipeModel.currency(item.price / item.personsDetail?.length)}</div>
                   </div>
                 </div>
                 <div className="flex justify-end mt-3 space-x-2">
@@ -416,6 +431,17 @@ export default function Content() {
       </>}
       result={() => setAddeditModal(null)}
     /> : <></>}
-
+    {balanceModal ? <Modal
+      title={`View Balance`}
+      className="max-w-[1200px]"
+      body={<>
+        <Balance
+          data={data}
+          persons={persons}
+          categories={categories}
+        />
+      </>}
+      result={() => setBalanceModal(null)}
+    /> : <></>}
   </>;
 }
