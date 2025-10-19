@@ -4,8 +4,11 @@ import { RootState } from "@/redux/store";
 import { useSelector } from "react-redux";
 import { CategoryType, PersonType } from "./Content";
 import "./balancestyle.css"
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import pipeModel from "@/utils/pipeModel";
+import { toast } from "react-toastify";
+import Modal from "@/components/Modal";
+import ViewExpenses from "./ViewExpenses";
 
 type ModalType = {
   data: any[]
@@ -15,6 +18,10 @@ type ModalType = {
 
 export default function Balance({ data, persons, categories }: ModalType) {
   const user: any = useSelector((state: RootState) => state.user.data);
+  const [filters, setFilter] = useState({
+    receiver: ''
+  })
+  const [listModal, setListModal] = useState<any>(null)
 
   const total = useMemo(() => {
     const t = data.map((itm: any) => Number(itm.price || 0)).reduce((p, c) => c + p, 0)
@@ -118,7 +125,111 @@ export default function Balance({ data, persons, categories }: ModalType) {
     }
 
     return settlements;
-  }, [data, balanceList])
+  }, [data, balanceList, filters.receiver])
+
+  const calculationList = useMemo(() => {
+    if (!Array.isArray(persons) || !Array.isArray(data)) return [];
+
+    return persons.map(payer => {
+      // Total amount paid by this person (excluding 'Hold')
+      const paidItems = data.filter(
+        item => item.paidBy === payer.id && item.status !== 'Hold'
+      );
+
+      const totalPaid =
+        paidItems.length > 0
+          ? paidItems
+            .map(item => Number(item.price || 0) / (item?.persons?.length || 1))
+            .reduce((sum, val) => sum + val, 0)
+          : 0;
+
+      // List of other persons involved with contribution details
+      const personContributions = persons
+        .filter(p => p.id !== payer.id)
+        .map(receiver => {
+          // Amount this payer spent for receiver
+          const sharedItems = data.filter(
+            item =>
+              item.paidBy === payer.id &&
+              item.status !== 'Hold' &&
+              item.persons?.includes(receiver.id)
+          );
+
+          const myAmount =
+            sharedItems.length > 0
+              ? sharedItems
+                .map(item => Number(item.price || 0) / (item?.persons?.length || 1))
+                .reduce((sum, val) => sum + val, 0)
+              : 0;
+
+          // Amount receiver spent for this payer
+          const reverseItems = data.filter(
+            item =>
+              item.paidBy === receiver.id &&
+              item.status !== 'Hold' &&
+              item.persons?.includes(payer.id)
+          );
+
+          const receiverAmount =
+            reverseItems.length > 0
+              ? reverseItems
+                .map(item => Number(item.price || 0) / (item?.persons?.length || 1))
+                .reduce((sum, val) => sum + val, 0)
+              : 0;
+
+          const contriAmount = myAmount - receiverAmount;
+
+          return {
+            id: receiver.id,
+            name: receiver.name,
+            color: receiver.color,
+            my_amount: myAmount,
+            receiver_amount: receiverAmount,
+            contri_amount: contriAmount,
+          };
+        })
+        .filter(p => p.contri_amount > 0);
+
+      return {
+        id: payer.id,
+        name: payer.name,
+        color: payer.color,
+        amount: totalPaid,
+        persons: personContributions,
+      };
+    }).filter(p => p.persons.length > 0);
+  }, [persons, data]);
+
+
+  const copyExpence = (pitm: any) => {
+    let text = ''
+    pitm.persons.map((item: any) => {
+      const me = pitm.name
+      const other = item.name
+      const my_amount = item.my_amount
+      const other_amount = item.receiver_amount
+      const contri_amount = item.contri_amount
+
+      text += `${me} → ${other}\n`
+      if (my_amount) text += `Gave ${pipeModel.currency(my_amount)} to ${other}\n`
+      if (other_amount) text += `Received ${pipeModel.currency(other_amount)} from ${other}\n`
+      text += `(${pipeModel.number(other_amount)} - ${pipeModel.number(my_amount)}) = ${pipeModel.number(contri_amount)}\n`
+      if (contri_amount < 0) text += `Will Pay: ${pipeModel.currency(Math.abs(contri_amount))}\n`
+      if (contri_amount > 0) text += `Will Receive: ${pipeModel.currency(Math.abs(contri_amount))}\n`
+      text += `........\n\n`
+    })
+
+    navigator.clipboard.writeText(text);
+    toast.success("Copied")
+  }
+
+  const viewExpence = (s: any, r: any) => {
+    setListModal({
+      list: data,
+      s,
+      r
+    })
+  }
 
   return <>
     <div className="max-h-[calc(100vh-150px)] overflow-auto">
@@ -202,9 +313,11 @@ export default function Balance({ data, persons, categories }: ModalType) {
           </div>
         </div>
 
+
+
         <div className="lg:col-span-2">
           <div className="bg-white rounded-xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center mb-6 flex-wrap gap-2">
               <h2 className="text-xl font-semibold text-gray-800">Payment Settlements</h2>
               <div className="flex space-x-2">
                 <div className="relative">
@@ -219,16 +332,19 @@ export default function Balance({ data, persons, categories }: ModalType) {
 
 
             <div className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <span className="material-symbols-outlined text-yellow-500 mr-2">schedule</span>
-                Pending Payments
-                <span className="ml-2 bg-yellow-100 text-yellow-800 text-sm px-2 py-1 rounded-full">3</span>
-              </h3>
+              <div className="flex flex-wrap gap-3 items-center mb-3">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                  <span className="material-symbols-outlined text-yellow-500 mr-2">schedule</span>
+                  All Pending Payments
+                  <span className="ml-2 bg-yellow-100 text-yellow-800 text-sm px-2 py-1 rounded-full">{settlementList.length}</span>
+                </h3>
+              </div>
+
 
               {settlementList.map((item, i) => {
-                return <div className="payment-flow" key={i}>
+                return <div className="payment-flow flex-wrap gap-2" key={i}>
                   <div className="person-card">
-                    <div className="person-avatar bg-purple-100 text-purple-600">
+                    <div className="person-avatar bg-purple-100 text-purple-600 mr-2">
                       {item.from?.name[0]}
                     </div>
                     <div>
@@ -251,7 +367,7 @@ export default function Balance({ data, persons, categories }: ModalType) {
                     </div>
                   </div>
 
-                  <div className="amount-badge ml-4">
+                  <div className="amount-badge">
                     {pipeModel.currency(item.amount)}
                   </div>
 
@@ -261,10 +377,80 @@ export default function Balance({ data, persons, categories }: ModalType) {
                 </div>
               })}
             </div>
+
+            {calculationList.map(citem => {
+              return <div className="mb-8" key={citem.id}>
+                <div className="flex flex-wrap gap-3 items-center mb-3">
+                  <h3 className={`text-lg font-semibold text-gray-800 mb-4 gap-3 flex items-center`}
+                    style={{
+                      color: citem.color
+                    }}
+                  >
+                    <span className="material-symbols-outlined text-yellow-500">schedule</span>
+                    {citem.name}{`'s`} Pending Payments
+                    <span className="bg-yellow-100 text-yellow-800 text-sm px-2 py-1 rounded-full">{pipeModel.currency(citem.amount)}</span>
+                    <button onClick={() => copyExpence(citem)} title="Copy Expence">
+                      <span className="material-symbols-outlined">content_copy</span>
+                    </button>
+                  </h3>
+                </div>
+
+
+                {citem.persons.map((item, i) => {
+                  return <div style={{ borderColor: citem.color }} className={`payment-flow flex-wrap gap-2 !border-[${citem.color}]`} key={i}>
+                    <div className="person-card">
+                      <div className="person-avatar bg-purple-100 text-purple-600 mr-2">
+                        {item.name[0]}
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-800">{item?.name}</div>
+                        <div className="text-sm text-gray-500">pays to</div>
+                      </div>
+                    </div>
+
+                    <div className="payment-arrow">
+                      <span className="material-symbols-outlined text-gray-400 text-2xl">arrow_forward</span>
+                    </div>
+
+                    <div className="person-card justify-end text-right">
+                      <div>
+                        <div className="font-medium text-gray-800">{citem?.name}</div>
+                        <div className="text-sm text-gray-500">will receive</div>
+                      </div>
+                      <div className="person-avatar bg-blue-100 text-blue-600 ml-3">
+                        {citem?.name[0]}
+                      </div>
+                    </div>
+
+                    <div className="amount-badge">
+                      {pipeModel.currency(item.contri_amount)}
+                    </div>
+
+                    <button title="View Expense"
+                      onClick={() => viewExpence(citem.id, item.id)}
+                      className="text-green-600 hover:bg-green-50 rounded-lg transition duration-200">
+                      <span className="material-symbols-outlined text-2xl">visibility</span>
+                    </button>
+                  </div>
+                })}
+              </div>
+            })}
           </div>
         </div>
       </div>
     </div>
+
+    {listModal ? <>
+      <Modal
+        title="View Expenses"
+        body={<>
+          <ViewExpenses
+            data={listModal}
+          />
+        </>}
+        result={()=>setListModal(null)}
+      />
+    </> : <></>}
 
   </>;
 }
