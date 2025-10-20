@@ -1,0 +1,90 @@
+ .status-pending { background-color: #fef3c7; color: #92400e; }
+        .status-done { background-color: #d1fae5; color: #065f46; }
+        .status-onhold { background-color: #fee2e2; color: #991b1b; }
+        
+        .balance-positive {
+            color: #065f46;
+            background-color: #d1fae5;
+        }
+        
+        .balance-negative {
+            color: #991b1b;
+            background-color: #fee2e2;
+        }
+        
+        .payment-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            background: white;
+            transition: all 0.2s ease;
+        }
+        
+        .payment-flow:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
+        }
+        
+        .payment-arrow {
+            display: flex;
+            align-items: center;
+            color: #6b7280;
+        }
+        
+        .person-card {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .amount-badge {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+        }
+        
+        .settled-badge {
+            background: #10b981;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            margin-left: 12px;
+        }
+        
+        .person-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.3s;
+            transform: rotate(90deg);
+            transform-origin: 50% 50%;
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }

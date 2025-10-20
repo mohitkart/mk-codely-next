@@ -6,7 +6,7 @@ import FireApi from "@/utils/firebaseApi.utils";
 import { loaderHtml } from "@/utils/shared";
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { ADD_PAGE_NAME, EXPENSE_CATEGORY_TABLE, EXPENSE_STATUS_LIST, EXPENSE_TYPE_LIST, PAGE_NAME, PAGE_TABLE } from "./shared";
+import { ADD_PAGE_NAME, EXPENSE_CATEGORY_TABLE, EXPENSE_PERSON_TABLE, EXPENSE_STATUS_LIST, PAGE_NAME, PAGE_TABLE } from "./shared";
 import { fireDateParse, FirestoreConditions } from "@/utils/firebase.utils";
 import { getColor } from "@/components/MkChart";
 import OptionDropdown from "@/components/OptionDropdown";
@@ -15,10 +15,10 @@ import pipeModel from "@/utils/pipeModel";
 import DebouncedInput from "@/components/DebouncedInput";
 import Modal from "@/components/Modal";
 import AddEdit from "./AddEdit";
-import ExpenseTabs from "./ExpenseTabs";
 import { createBackup } from "@/utils/backup";
 import Balance from "./Balance";
-import MkDateRangePicker, { getRange } from "@/components/MkDateRangePicker";
+import ExpenseTabs from "../ExpenseTabs";
+import MkDateRangePicker from "@/components/MkDateRangePicker";
 
 export type ExpenseForm = {
   id?: string | null
@@ -27,7 +27,8 @@ export type ExpenseForm = {
   price: any
   date: any
   category: string
-  type: string
+  persons?: string[] | null
+  paidBy: string
 }
 
 export type CategoryType = {
@@ -49,16 +50,16 @@ export default function Content() {
   const [persons, setPersons] = useState<PersonType[]>([]);
   const [addeditModal, setAddeditModal] = useState<any>();
   const [balanceModal, setBalanceModal] = useState<any>();
-  const range=getRange('This Month')
   const [filters, setFilters] = useState({
     search: '',
     sortBy: 'createdAt desc',
-    status: '',
-    type:'',
+    status: 'Pending',
+    paidBy: [],
+    persons:[],
     category:[],
-    startDate: range.startDate,
-    range:range.range,
-    endDate:range.endDate,
+    startDate: '',
+    endDate: '',
+    range:''
   })
   const { get: getList, isLoading: isListLoading } = FireApi()
   const { get: getCategory, isLoading: categoryLoading } = FireApi()
@@ -85,7 +86,7 @@ export default function Content() {
     })
   }
 
- const getData = async () => {
+  const getData = async () => {
     const conditions: FirestoreConditions[] = [
       { field: 'addedBy', operator: '==', value: user?.id },
     ]
@@ -95,6 +96,10 @@ export default function Content() {
       const endDate = new Date(`${filters.endDate} 23:59`);
       conditions.push({ field: 'date', operator: '>=', value: startDate })
       conditions.push({ field: 'date', operator: '<=', value: endDate })
+    }
+
+    if (filters.status) {
+      conditions.push({ field: 'status', operator: '==', value: filters.status })
     }
    
     let data = []
@@ -106,7 +111,7 @@ export default function Content() {
         data = res.data.map((itm: any) => ({
           ...itm,
           createdAt: itm.createdAt || itm.date,
-          status: itm.status || 'Pending'
+          status: itm.status || 'deactive'
         }))
       }
        loaderHtml(false)
@@ -114,6 +119,7 @@ export default function Content() {
     
     setList(data)
   }
+
   const getCategories = async () => {
     const res = await getCategory(EXPENSE_CATEGORY_TABLE, [{ field: 'addedBy', operator: '==', value: user?.id },])
     let data = []
@@ -127,14 +133,27 @@ export default function Content() {
     setCategories(data)
   }
 
+  const getPersonsList = async () => {
+    const res = await getPersons(EXPENSE_PERSON_TABLE, [{ field: 'addedBy', operator: '==', value: user?.id },])
+    let data = []
+    if (res.data) {
+      data = res.data.map((itm: any, i: any) => ({ ...itm, color: getColor(i) })).sort((a: any, b: any) => {
+        if (a.name.toLocaleLowerCase() < b.name.toLocaleLowerCase()) return -1; // a comes before b
+        if (a.name.toLocaleLowerCase() > b.name.toLocaleLowerCase()) return 1;  // a comes after b
+        return 0;
+      })
+    }
+    setPersons(data)
+  }
 
   useEffect(() => {
     getData()
-  }, [filters.startDate,filters.endDate])
+  }, [filters.status,filters.startDate,filters.endDate])
 
   useEffect(() => {
     if (user) {
       getCategories()
+      getPersonsList()
     }
   }, [])
 
@@ -146,21 +165,23 @@ export default function Content() {
     let value = false
     const keys = [
       'search',
-      'status',
-      'type',
+      // 'status',
     ]
     const f: any = filters
     if (keys.find(key => f[key] ? true : false)) value = true
+    if(f.persons?.length) value=true
+    if(f.paidBy?.length) value=true
     if(f.category?.length) value=true
     return value
   }, [filters])
 
   const reset = () => {
     const f = {
-      status: '',
+      // status: '',
+      paidBy: [],
       search: '',
-      type:'',
       category:[],
+      persons:[]
     }
     filter(f)
   }
@@ -173,12 +194,16 @@ export default function Content() {
           ...item,
           date: fireDateParse(item.date),
           categoryDetail: categories.find(itm => itm.id == item.category),
+          paidByDetail: persons.find(itm => itm.id == item.paidBy),
+          personsDetail: item.persons?.map(p => persons.find(itm => itm.id == p))
         }
       })
       ?.filter((item: any) => {
         if (filters.status && item.status !== filters.status) return false;
-        if (filters.type && item.type !== filters.type) return false;
+        if (filters.paidBy.length && !filters.paidBy.some(personId=>item.paidBy==personId)) return false;
         if (filters.category.length && !filters.category.some(id=>item.category==id)) return false;
+        if (filters.persons.length && !filters.persons.some((personId) => item.persons.includes(personId))) return false;
+        
 
         if (filters.search) {
           const searchValue = filters.search.toLowerCase().trim();
@@ -203,17 +228,15 @@ export default function Content() {
       });
   }, [list, filters, categories]);
 
-   const totalGive = useMemo(() => {
-    const t = data?.filter(itm=>itm.type=='Give').map((itm: any) => Number(itm.price || 0)).reduce((p, c) => c + p, 0)
+   const totalPaid = useMemo(() => {
+    const t = data?.map((itm: any) => Number(itm.price || 0)).reduce((p, c) => c + p, 0)
     return t
   }, [data])
 
-   const totalGot = useMemo(() => {
-    const t = data?.filter(itm=>itm.type=='Got').map((itm: any) => Number(itm.price || 0)).reduce((p, c) => c + p, 0)
+    const totalShare = useMemo(() => {
+    const t = data?.filter((item:any)=>item.persons?.length>1).map((itm: any) => Number(itm.price || 0) / Number(itm.persons?.length || 0)).reduce((p, c) => c + p, 0)
     return t
   }, [data])
-
-  const totalBalance=totalGot-totalGive
 
   const sortByList = [
     {
@@ -295,9 +318,8 @@ export default function Content() {
 
       <div className="lg:col-span-2">
         <div className="flex flex-wrap gap-4 text-blue-500">
-          <span>Total Give: <span className="font-bold">{pipeModel.currency(totalGive)}</span></span>
-           <span>Total Got:  <span className="font-bold">{pipeModel.currency(totalGot)}</span></span>
-           <span>Total Balance:  <span className={`font-bold ${totalBalance<0?'text-red-500':'text-green-500'}`}>{pipeModel.currency(totalGot-totalGive)}</span></span>
+          <span>Total Paid: <span className="font-bold">{pipeModel.currency(totalPaid)}</span></span>
+           <span>Total Share Per Person:  <span className="font-bold">{pipeModel.currency(totalShare)}</span></span>
         </div>
         <div className="bg-white rounded-lg shadow-md p-6">
           <div id="search-filter" className="mb-4 p-4 bg-gray-50 rounded-md">
@@ -339,6 +361,26 @@ export default function Content() {
                   placeholder="Category"
                 />
               </div>
+              <div className="min-w-[200px]">
+                <OptionDropdown
+                  value={filters.paidBy}
+                  onChange={e => filter({ paidBy: e })}
+                  options={persons}
+                  isLoading={personsLoading}
+                  multiselect
+                  placeholder="Paid By"
+                />
+              </div>
+              <div className="min-w-[200px]">
+                <OptionDropdown
+                  value={filters.persons}
+                  onChange={e => filter({ persons: e })}
+                  options={persons}
+                  isLoading={personsLoading}
+                  multiselect
+                  placeholder="Contribution"
+                />
+              </div>
               <div className="min-w-[150px]">
                 <OptionDropdown
                   value={filters.status}
@@ -347,16 +389,6 @@ export default function Content() {
                   showUnselect={false}
                   placeholder="Status"
                   options={EXPENSE_STATUS_LIST}
-                />
-              </div>
-              <div className="min-w-[150px]">
-                <OptionDropdown
-                  value={filters.type}
-                  onChange={e => filter({ type: e })}
-                  isSearch={false}
-                  showUnselect={false}
-                  placeholder="Type"
-                  options={EXPENSE_TYPE_LIST}
                 />
               </div>
               <div>
@@ -375,6 +407,11 @@ export default function Content() {
                   Reset
                 </button>
               </> : <></>}
+              <button type="button"
+                onClick={() => setBalanceModal(true)}
+                className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200 flex items-center justify-center">
+                Balances
+              </button>
             </div>
           </div>
 
@@ -400,9 +437,16 @@ export default function Content() {
                     </div>
                     <div className="text-sm text-gray-600 mb-2">
                       <span className="material-symbols-outlined align-text-bottom text-sm mr-1">person</span>
-                      Type: <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${item.type=='Got'?'text-green-500 bg-green-200':'text-red-500 bg-red-200'}`}
-                      >{item?.type}</span>
+                      Paid by: <span
+                        className="px-2 py-1 rounded-full text-xs font-medium text-white"
+                        style={{
+                          backgroundColor: item?.paidByDetail?.color
+                        }}
+                      >{item?.paidByDetail?.name}</span>
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      <span className="material-symbols-outlined align-text-bottom text-sm mr-1">group</span>
+                      Shared with: {item.personsDetail?.map((itm: any) => itm?.name)?.sort()?.join(', ')}
                     </div>
                     <div className="text-sm text-gray-600">
                       <span className="material-symbols-outlined align-text-bottom text-sm mr-1">folder</span>
@@ -412,6 +456,7 @@ export default function Content() {
                   <div className="text-right">
                     <div className="text-lg font-semibold text-gray-800 mb-1">{pipeModel.currency(item.price)}</div>
                     <div className="text-sm text-gray-500">{datepipeModel.datetime(item.date)}</div>
+                    <div className="text-lg font-semibold text-gray-400 mb-1">{pipeModel.currency(item.price / item.personsDetail?.length)}</div>
                   </div>
                 </div>
                 <div className="flex justify-end mt-3 space-x-2">

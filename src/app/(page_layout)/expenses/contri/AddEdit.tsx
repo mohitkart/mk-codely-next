@@ -4,7 +4,7 @@ import { RootState } from "@/redux/store";
 import FireApi from "@/utils/firebaseApi.utils";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { ADD_PAGE_NAME, EXPENSE_STATUS_LIST, EXPENSE_TYPE_LIST, PAGE_TABLE } from "./shared";
+import { ADD_PAGE_NAME, EXPENSE_STATUS_LIST, PAGE_TABLE } from "./shared";
 import { CategoryType, ExpenseForm, PersonType } from "./Content";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { getRandomCode, loaderHtml } from "@/utils/shared";
@@ -31,7 +31,7 @@ export default function AddEdit({ detail, action,persons,categories}: ModalType)
     control,
     reset: resetForm,
     formState: { errors, defaultValues },
-  } = useForm<ExpenseForm>({ defaultValues: { name: '', status: 'Done', price: '', date: datepipeModel.datetodatetime(new Date()), category: '', type: 'Give' } })
+  } = useForm<ExpenseForm>({ defaultValues: { name: '', status: 'Pending', price: '', date: datepipeModel.datetodatetime(new Date()), category: '', persons: [], paidBy: '' } })
   const { post, isLoading: formLoading, put } = FireApi()
 
   const onSubmit: SubmitHandler<ExpenseForm> = (data) => {
@@ -88,6 +88,48 @@ export default function AddEdit({ detail, action,persons,categories}: ModalType)
             placeholder="Enter expense title" />
         </div>
 
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-1">Paid By</label>
+          <Controller
+            name={`paidBy`}
+            control={control}
+            rules={{ required: true }}
+            render={({ field }) => {
+              return <OptionDropdown
+                value={field.value}
+                onChange={e => {
+                  setValue('paidBy', e)
+                }}
+                options={persons}
+              />
+            }}
+          />
+          {errors.paidBy && <span className="text-red-500">This field is required</span>}
+        </div>
+
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-1">Persons (Contribution)</label>
+          <Controller
+            name={`persons`}
+            control={control}
+            rules={{ required: true }}
+            render={({ field }) => {
+              return <OptionDropdown
+                value={field.value}
+                onChange={e => {
+                  setValue('persons', e)
+                }}
+                options={persons}
+                multiselect
+              />
+            }}
+          />
+          {errors.persons && <span className="text-red-500">This field is required</span>}
+        </div>
+
+
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
           <div className="relative">
@@ -128,7 +170,9 @@ export default function AddEdit({ detail, action,persons,categories}: ModalType)
           />
           {errors.category && <span className="text-red-500">This field is required</span>}
         </div>
-<div className="mb-4">
+
+
+        <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
           <Controller
             name={`status`}
@@ -147,27 +191,6 @@ export default function AddEdit({ detail, action,persons,categories}: ModalType)
             }}
           />
           {errors.status && <span className="text-red-500">This field is required</span>}
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-          <Controller
-            name={`type`}
-            control={control}
-            rules={{ required: true }}
-            render={({ field }) => {
-              return <OptionDropdown
-                value={field.value}
-                onChange={e => {
-                  setValue('type', e)
-                }}
-                showUnselect={false}
-                isSearch={false}
-                options={EXPENSE_TYPE_LIST}
-              />
-            }}
-          />
-          {errors.type && <span className="text-red-500">This field is required</span>}
         </div>
 
 
