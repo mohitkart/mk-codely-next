@@ -306,20 +306,12 @@ export default function Balance({ data, persons, categories }: ModalType) {
           <div className="bg-white rounded-xl shadow-md p-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
             <div className="space-y-3">
-              {/* <button className="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition duration-200 flex items-center justify-center">
-                <span className="material-symbols-outlined mr-2">check_circle</span>
-                Mark All as Settled
-              </button> */}
               <button
               onClick={()=>copyCalculation()}
                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-200 flex items-center justify-center">
                 <span className="material-symbols-outlined mr-2">receipt</span>
                 Copy Settlement Report
               </button>
-              {/* <button className="w-full bg-gray-200 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-300 transition duration-200 flex items-center justify-center">
-                <span className="material-symbols-outlined mr-2">send</span>
-                Send Reminders
-              </button> */}
             </div>
           </div>
 
@@ -456,25 +448,9 @@ export default function Balance({ data, persons, categories }: ModalType) {
                       <span className="material-symbols-outlined text-gray-400 text-2xl">arrow_forward</span>
                     </div>
 
-                    {/* <div className="person-card justify-end text-right">
-                      <div>
-                        <div className="font-medium text-gray-800">{citem?.name}</div>
-                        <div className="text-sm text-gray-500">will receive</div>
-                      </div>
-                      <div className="person-avatar bg-blue-100 text-blue-600 ml-3">
-                        {citem?.name[0]}
-                      </div>
-                    </div> */}
-
                     <div className="amount-badge cursor-pointer" title="View Expense" onClick={() => viewExpence(citem.id, item.id)}>
                       {pipeModel.currency(item.contri_amount)}
                     </div>
-
-                    {/* <button title="View Expense"
-                      onClick={() => viewExpence(citem.id, item.id)}
-                      className="text-green-600 hover:bg-green-50 rounded-lg transition duration-200">
-                      <span className="material-symbols-outlined text-2xl">visibility</span>
-                    </button> */}
                   </div>
                 })}
               </div>
