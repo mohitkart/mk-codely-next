@@ -5,14 +5,22 @@ import { useSelector } from "react-redux";
 import { EXPENSE_STATUS_LIST } from "./shared";
 import pipeModel from "@/utils/pipeModel";
 import datepipeModel from "@/utils/datepipemodel";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { toast } from "react-toastify";
+import DebouncedInput from "@/components/DebouncedInput";
 
 type ModalType = {
   data: { list: any[], s: string, r: string }
+  persons:any[]
 }
 
-export default function ViewExpenses({ data }: ModalType) {
+export default function ViewExpenses({ data,persons }: ModalType) {
   const user: any = useSelector((state: RootState) => state.user.data);
+  const [filters,setFilter]=useState({search:''})
+
+  const filter=(p={})=>{
+    setFilter(prev=>({...prev,...p}))
+  }
 
   const totalShare = useMemo(() => {
     const t = data?.list?.filter(itm => itm.paidBy == data.s && itm.persons?.includes(data.r)).map((itm: any) => Number(itm.price || 0) / Number(itm.persons?.length || 0)).reduce((p, c) => c + p, 0)
@@ -25,53 +33,76 @@ export default function ViewExpenses({ data }: ModalType) {
   }, [data])
 
   const list = useMemo(() => {
-    const p = data?.list?.filter(itm => (itm.paidBy == data.s && itm.persons?.includes(data.r)) || (itm.paidBy == data.r && itm.persons?.includes(data.s)))
-    return p
-  }, [data])
+    const search=filters.search.trim().toLowerCase()
+    const p = data?.list
+    ?.filter(itm => (itm.paidBy == data.s && itm.persons?.includes(data.r)) || (itm.paidBy == data.r && itm.persons?.includes(data.s)))
+    return p.filter(item=>{
+      if(search){
+        if(item.name?.toLowerCase()?.includes(search)) return true
+        return false
+      }
+        return true
+    })
+  }, [data,filters.search])
 
-  //   const copyCalculation = () => {
-  //     let text = ''
-  //     const datelist = Array.from(
-  //         new Set(list.map((item:any) => datepipeModel.datetostring(item.date)))
-  //     ).sort((a:any, b:any) => new Date(a) - new Date(b))
+ const copyCalculation = () => {
+        let text = ''
+        const datelist = Array.from(
+            new Set(list.map((item) => datepipeModel.datetostring(item.date)))
+        ).sort((a:any, b:any) => new Date(a).getTime() - new Date(b).getTime())
 
-  //     datelist.map(date => {
-  //             const listdate=list.filter(itm => itm.status != 'Hold'&&itm.status != 'Done'&& datepipeModel.datetostring(itm.date) == date) 
-  //             text+=`Date : ${datepipeModel.date(date)}:-\n`
+        datelist.map(date => {
+                const listdate=list.filter(itm => itm.status != 'Hold'&&itm.status != 'Done'&& datepipeModel.datetostring(itm.date) == date) 
+                text+=`Date : ${datepipeModel.date(date)}:-\n`
 
-  //             persons.map(person=>{
-  //                 let list=listdate.filter(item=>item.paidBy==person.id)
-  //                 if (list.length) {
-  //                     let total=list.map(itm => itm.price).reduce((prev, current) => {
-  //                                         return Number(prev) + Number(current)
-  //                                     })
-  //                     text += `Paid By ${person.name}:-\n`
-  //                     list.map(item => {
-  //                         text += `${item.name} (${pipeModel.currency(item.price)})\n`
-  //                         let contributors= item.personData.map(itm=>itm.name).sort().join(', ')
-  //                         let contri=item.price/item.personData.length
-  //                        text +=`Contributors : ${contributors}\n`
-  //                         text +=`Contri : ${pipeModel.currency(contri)}\n\n`
-  //                     })
+                persons.map(person=>{
+                    const list=listdate.filter(item=>item.paidBy==person.id)
+                    if (list.length) {
+                        text += `Paid By ${person.name}:-\n`
+                        list.map(item => {
+                            text += `${item.name} (${pipeModel.currency(item.price)})\n`
+                            const contributors= item.personsDetail.map((itm:any)=>itm.name).sort().join(', ')
+                            const contri=item.price/item.personsDetail.length
+                           text +=`Contributors : ${contributors}\n`
+                            text +=`Contri : ${pipeModel.currency(contri)}\n\n`
+                        })
+                        text += `\n`
+                    }
+                })
+                 text += `------------\n\n`
 
-  //                     text += `\n`
-  //                 }
-  //             })
-  //              text += `------------\n\n`
+        })
 
-  //     })
-
-  //     navigator.clipboard.writeText(text);
-  //     toast.success("Copied")
-  // }
-
+        navigator.clipboard.writeText(text);
+        toast.success("Copied")
+    }
   return <>
     <div className="mb-3">
-      Total Share : {pipeModel.currency(totalShare)} <br />
-      Total Receive : {pipeModel.currency(totalReceive)} <br />
-      Balance : {pipeModel.currency(totalShare - totalReceive)} <br />
+      <div className="grid grid-cols-2 gap-3">
+        <div className="text-[14px] mb-2">
+          Total Share : {pipeModel.currency(totalShare)} <br />
+          Total Receive : {pipeModel.currency(totalReceive)} <br />
+          Balance : {pipeModel.currency(totalShare - totalReceive)} <br />
+        </div>
+        <div>
+          <button onClick={() => copyCalculation()} className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 px-4 py-3 rounded-lg flex items-center transition-colors">
+            <span className="material-symbols-outlined mr-2">content_copy</span>
+            Copy
+          </button>
+        </div>
+      </div>
+      <div>
+         <div className="relative">
+                  <DebouncedInput type="text" placeholder="Search payments..."
+                  value={filters.search}
+                  onChange={e=>filter({search:e})}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full" />
+                  <span className="material-symbols-outlined absolute left-3 top-2 text-gray-400">search</span>
+                </div>
+      </div>
+      
     </div>
-    <div className="max-h-[calc(100vh-140px)] overflow-auto flex flex-wrap gap-3">
+    <div className="max-h-[calc(100vh-250px)] overflow-auto flex flex-wrap gap-3">
       {list?.map((item, i) => {
         return <div className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition duration-200 w-full" key={item.id}>
           <div className="flex justify-between items-start">

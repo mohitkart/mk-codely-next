@@ -234,7 +234,7 @@ const OptionDropdown: React.FC<OptionDropdownProps> = ({
             className={`relative ${disabled ? 'bg-gray-200' : ''} p-1 min-h-10 cursor-pointer border border-[#e5e7eb] px-4 shadow-box bg-white text-[#333] rounded-lg flex items-center text-left text-sm gap-2 z-9 overflow-hidden px-2 ${className} ${isOpen ? openClass : closeClass}`}
           >
             <div className="flex gap-1 flex-wrap w-full items-center">
-              {isLoading ? 'Loading...' : selected?.map((item: any, i: number) => {
+              {isLoading ? 'Loading...' :selected?.length?selected?.map((item: any, i: number) => {
                 return <div
                   key={i}
                   style={{
@@ -249,7 +249,7 @@ const OptionDropdown: React.FC<OptionDropdownProps> = ({
                   }}
                   >close</span>
                 </div>
-              })}
+              }):(placeholder||'Select')}
             </div>
             <span className="material-symbols-outlined text-[20px] font-medium text-[#ccc]">arrow_drop_down</span>
           </div>

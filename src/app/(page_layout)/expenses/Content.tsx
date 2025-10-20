@@ -53,7 +53,8 @@ export default function Content() {
     search: '',
     sortBy: 'createdAt desc',
     status: 'Pending',
-    paidBy: '',
+    paidBy: [],
+    persons:[],
     category: '',
     startDate: '',
     endDate: '',
@@ -160,19 +161,21 @@ export default function Content() {
       'search',
       // 'status',
       'category',
-      'paidBy',
     ]
     const f: any = filters
     if (keys.find(key => f[key] ? true : false)) value = true
+    if(f.persons?.length) value=true
+    if(f.paidBy?.length) value=true
     return value
   }, [filters])
 
   const reset = () => {
     const f = {
       // status: '',
-      paidBy: '',
+      paidBy: [],
       search: '',
       category: '',
+      persons:[]
     }
     filter(f)
   }
@@ -191,8 +194,10 @@ export default function Content() {
       })
       ?.filter((item: any) => {
         if (filters.category && item.category !== filters.category) return false;
-        if (filters.paidBy && item.paidBy !== filters.paidBy) return false;
         if (filters.status && item.status !== filters.status) return false;
+        if (filters.paidBy.length && !filters.paidBy.some(personId=>item.paidBy==personId)) return false;
+        if (filters.persons.length && !filters.persons.some((personId) => item.persons.includes(personId))) return false;
+        
 
         if (filters.search) {
           const searchValue = filters.search.toLowerCase().trim();
@@ -319,7 +324,18 @@ export default function Content() {
                   onChange={e => filter({ paidBy: e })}
                   options={persons}
                   isLoading={personsLoading}
+                  multiselect
                   placeholder="Paid By"
+                />
+              </div>
+              <div className="min-w-[200px]">
+                <OptionDropdown
+                  value={filters.persons}
+                  onChange={e => filter({ persons: e })}
+                  options={persons}
+                  isLoading={personsLoading}
+                  multiselect
+                  placeholder="Contribution"
                 />
               </div>
               <div className="min-w-[150px]">

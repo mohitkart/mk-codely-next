@@ -9,6 +9,7 @@ import pipeModel from "@/utils/pipeModel";
 import { toast } from "react-toastify";
 import Modal from "@/components/Modal";
 import ViewExpenses from "./ViewExpenses";
+import datepipeModel from "@/utils/datepipemodel";
 
 type ModalType = {
   data: any[]
@@ -190,11 +191,19 @@ export default function Balance({ data, persons, categories }: ModalType) {
         })
         .filter(p => p.contri_amount > 0);
 
+         const willReceive =
+        personContributions.length > 0
+          ? personContributions
+            .map(item => Number(item.contri_amount || 0))
+            .reduce((sum, val) => sum + val, 0)
+          : 0;
+
       return {
         id: payer.id,
         name: payer.name,
         color: payer.color,
-        amount: totalPaid,
+        totalPaid: totalPaid,
+        willReceive: willReceive,
         persons: personContributions,
       };
     }).filter(p => p.persons.length > 0);
@@ -231,6 +240,38 @@ export default function Balance({ data, persons, categories }: ModalType) {
     })
   }
 
+   const copyCalculation = () => {
+        let text = ''
+        const datelist = Array.from(
+            new Set(data.map((item) => datepipeModel.datetostring(item.date)))
+        ).sort((a:any, b:any) => new Date(a).getTime() - new Date(b).getTime())
+
+        datelist.map(date => {
+                const listdate=data.filter(itm => itm.status != 'Hold'&&itm.status != 'Done'&& datepipeModel.datetostring(itm.date) == date) 
+                text+=`Date : ${datepipeModel.date(date)}:-\n`
+
+                persons.map(person=>{
+                    const list=listdate.filter(item=>item.paidBy==person.id)
+                    if (list.length) {
+                        text += `Paid By ${person.name}:-\n`
+                        list.map(item => {
+                            text += `${item.name} (${pipeModel.currency(item.price)})\n`
+                            const contributors= item.personsDetail.map((itm:any)=>itm.name).sort().join(', ')
+                            const contri=item.price/item.personsDetail.length
+                           text +=`Contributors : ${contributors}\n`
+                            text +=`Contri : ${pipeModel.currency(contri)}\n\n`
+                        })
+                        text += `\n`
+                    }
+                })
+                 text += `------------\n\n`
+
+        })
+
+        navigator.clipboard.writeText(text);
+        toast.success("Copied")
+    }
+
   return <>
     <div className="max-h-[calc(100vh-150px)] overflow-auto">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -242,7 +283,7 @@ export default function Balance({ data, persons, categories }: ModalType) {
                 <p className="text-blue-100">All expenses are tracked and calculated</p>
               </div>
               <div className="bg-white bg-opacity-20 p-2 rounded-lg">
-                <span className="material-symbols-outlined">account_balance_wallet</span>
+                <span className="material-symbols-outlined text-gray-600">account_balance_wallet</span>
               </div>
             </div>
 
@@ -257,8 +298,28 @@ export default function Balance({ data, persons, categories }: ModalType) {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-blue-100">Pending Settlements</span>
-                <span className="font-bold text-lg">{settlementList.length}</span>
+                <span className="font-bold text-lg">{calculationList.length}</span>
               </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
+            <div className="space-y-3">
+              {/* <button className="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition duration-200 flex items-center justify-center">
+                <span className="material-symbols-outlined mr-2">check_circle</span>
+                Mark All as Settled
+              </button> */}
+              <button
+              onClick={()=>copyCalculation()}
+               className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-200 flex items-center justify-center">
+                <span className="material-symbols-outlined mr-2">receipt</span>
+                Copy Settlement Report
+              </button>
+              {/* <button className="w-full bg-gray-200 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-300 transition duration-200 flex items-center justify-center">
+                <span className="material-symbols-outlined mr-2">send</span>
+                Send Reminders
+              </button> */}
             </div>
           </div>
 
@@ -272,7 +333,7 @@ export default function Balance({ data, persons, categories }: ModalType) {
 
               {balanceList.map((item, i) => {
                 return <div key={i} className="flex justify-between items-center p-3 rounded-lg border border-gray-100">
-                  <div className="flex items-center">
+                  <div className="flex items-center gap-3">
                     <div className="person-avatar bg-blue-100 text-blue-600">
                       {item?.person?.name[0]}
                     </div>
@@ -294,23 +355,7 @@ export default function Balance({ data, persons, categories }: ModalType) {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
-            <div className="space-y-3">
-              <button className="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition duration-200 flex items-center justify-center">
-                <span className="material-symbols-outlined mr-2">check_circle</span>
-                Mark All as Settled
-              </button>
-              <button className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-200 flex items-center justify-center">
-                <span className="material-symbols-outlined mr-2">receipt</span>
-                Export Settlement Report
-              </button>
-              <button className="w-full bg-gray-200 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-300 transition duration-200 flex items-center justify-center">
-                <span className="material-symbols-outlined mr-2">send</span>
-                Send Reminders
-              </button>
-            </div>
-          </div>
+          
         </div>
 
 
@@ -331,7 +376,7 @@ export default function Balance({ data, persons, categories }: ModalType) {
             </div>
 
 
-            <div className="mb-8">
+            {/* <div className="mb-8">
               <div className="flex flex-wrap gap-3 items-center mb-3">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                   <span className="material-symbols-outlined text-yellow-500 mr-2">schedule</span>
@@ -339,7 +384,6 @@ export default function Balance({ data, persons, categories }: ModalType) {
                   <span className="ml-2 bg-yellow-100 text-yellow-800 text-sm px-2 py-1 rounded-full">{settlementList.length}</span>
                 </h3>
               </div>
-
 
               {settlementList.map((item, i) => {
                 return <div className="payment-flow flex-wrap gap-2" key={i}>
@@ -376,7 +420,7 @@ export default function Balance({ data, persons, categories }: ModalType) {
                   </button>
                 </div>
               })}
-            </div>
+            </div> */}
 
             {calculationList.map(citem => {
               return <div className="mb-8" key={citem.id}>
@@ -388,7 +432,7 @@ export default function Balance({ data, persons, categories }: ModalType) {
                   >
                     <span className="material-symbols-outlined text-yellow-500">schedule</span>
                     {citem.name}{`'s`} Pending Payments
-                    <span className="bg-yellow-100 text-yellow-800 text-sm px-2 py-1 rounded-full">{pipeModel.currency(citem.amount)}</span>
+                    <span className="bg-yellow-100 text-yellow-800 text-sm px-2 py-1 rounded-full">{pipeModel.currency(citem.willReceive)}</span>
                     <button onClick={() => copyExpence(citem)} title="Copy Expence">
                       <span className="material-symbols-outlined">content_copy</span>
                     </button>
@@ -404,7 +448,7 @@ export default function Balance({ data, persons, categories }: ModalType) {
                       </div>
                       <div>
                         <div className="font-medium text-gray-800">{item?.name}</div>
-                        <div className="text-sm text-gray-500">pays to</div>
+                        <div className="text-sm text-gray-500">will pay</div>
                       </div>
                     </div>
 
@@ -412,7 +456,7 @@ export default function Balance({ data, persons, categories }: ModalType) {
                       <span className="material-symbols-outlined text-gray-400 text-2xl">arrow_forward</span>
                     </div>
 
-                    <div className="person-card justify-end text-right">
+                    {/* <div className="person-card justify-end text-right">
                       <div>
                         <div className="font-medium text-gray-800">{citem?.name}</div>
                         <div className="text-sm text-gray-500">will receive</div>
@@ -420,17 +464,17 @@ export default function Balance({ data, persons, categories }: ModalType) {
                       <div className="person-avatar bg-blue-100 text-blue-600 ml-3">
                         {citem?.name[0]}
                       </div>
-                    </div>
+                    </div> */}
 
-                    <div className="amount-badge">
+                    <div className="amount-badge cursor-pointer" title="View Expense" onClick={() => viewExpence(citem.id, item.id)}>
                       {pipeModel.currency(item.contri_amount)}
                     </div>
 
-                    <button title="View Expense"
+                    {/* <button title="View Expense"
                       onClick={() => viewExpence(citem.id, item.id)}
                       className="text-green-600 hover:bg-green-50 rounded-lg transition duration-200">
                       <span className="material-symbols-outlined text-2xl">visibility</span>
-                    </button>
+                    </button> */}
                   </div>
                 })}
               </div>
@@ -446,6 +490,7 @@ export default function Balance({ data, persons, categories }: ModalType) {
         body={<>
           <ViewExpenses
             data={listModal}
+            persons={persons}
           />
         </>}
         result={()=>setListModal(null)}
