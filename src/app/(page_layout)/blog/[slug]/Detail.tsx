@@ -109,7 +109,7 @@ export default function BlogDetail() {
                 <ImageHtml
                   height={415}
                   width={970}
-                  src={noImg(loaderData?.image)} alt={loaderData?.title} className="bg-gray-200 w-full h-auto object-cover" />
+                  src={noImg(loaderData?.image,'blogs')} alt={loaderData?.title} className="bg-gray-200 w-full h-auto object-cover" />
               </div>
             </> : <></>}
 
@@ -300,7 +300,7 @@ export default function BlogDetail() {
                   <ImageHtml
                     height={64}
                     width={64}
-                    src={noImg(item.image)}
+                    src={noImg(item.image,'blogs')}
                     alt={item.title} className="w-full h-full object-cover" />
                 </div>
                 <div className="ml-4">

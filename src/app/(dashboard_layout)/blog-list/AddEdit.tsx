@@ -220,6 +220,7 @@ export default function AddEdit() {
                     value={field.value}
                     modal={PAGE_TABLE}
                     result={e => {
+                      console.log("e",e)
                       setValue('image', e.value)
                     }}
                   />

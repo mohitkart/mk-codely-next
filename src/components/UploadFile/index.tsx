@@ -51,6 +51,7 @@ const UploadFile= ({ multiple = false, modal = 'default', type = 'image', label 
                if(multiple){
                     v=image.filter((itm:any)=>itm!=img)
                }
+               setImage(v)
             result({value:v})
         })
     }

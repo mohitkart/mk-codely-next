@@ -32,7 +32,7 @@ export async function generateMetadata(
     };
   }
 
-  const images = blog?.image ? [noImg(blog?.image)] : []
+  const images = blog?.image ? [noImg(blog?.image,'blogs')] : []
   const title = blog.title
   const description = blog.short_description
   const data = {

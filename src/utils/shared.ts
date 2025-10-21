@@ -23,9 +23,9 @@ export const copyClipboard=(text:any='')=>{
   navigator.clipboard.writeText(text);
 }
 
-export const noImg = (img:any='', defaultImg = '/img/placeholder.png') => {
+export const noImg = (img:string='', modal:string='',defaultImg = '/img/placeholder.png') => {
   let value = defaultImg;
-  if (img) value = imageModel.getImage(img)
+  if (img) value = imageModel.getImage(img,modal)
   return value;
 };
 
