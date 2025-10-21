@@ -12,7 +12,6 @@ const BlogCard = ({ item }: { item: any }) => {
   return <div className="bg-white rounded-xl shadow-md overflow-hidden blog-card">
     <div className="h-48 bg-purple-200 overflow-hidden">
       <Link href={`/blog/${item.id}`}>
-      {item.image}<br/>
       <ImageHtml
       height={192}
       width={480}
