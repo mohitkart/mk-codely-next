@@ -44,8 +44,6 @@ export default function AddEdit() {
 
   const [categories, setCategories] = useState<any[]>([])
   const onSubmit: SubmitHandler<FormType> = (data) => {
-    console.log("data",data);
-    
     loaderHtml(true)
     if (slug) {
       put(PAGE_TABLE, { ...data, id: slug }).then(res => {

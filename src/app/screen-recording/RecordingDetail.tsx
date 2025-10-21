@@ -17,7 +17,6 @@ export default function RecordingDetail({ loaderData, share }: Props) {
     if (!video) return;
     setDimensions(`${video.videoWidth}×${video.videoHeight}`);
   };
-  console.log("share",share)
   return <>
     <div className="bg-white rounded-xl shadow-lg overflow-hidden">
       <div className="video-container relative">
