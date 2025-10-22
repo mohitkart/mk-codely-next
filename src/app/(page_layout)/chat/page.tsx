@@ -1,48 +1,64 @@
-// app/chat/page.jsx
-import { getMessages } from "@/utils/db";
-import { sendMessage } from "@/app/actions";
+"use client";
+import envirnment from "@/envirnment";
+import { useEffect, useState } from "react";
+import io from "socket.io-client";
 
-export const revalidate = 10; // ⏱ revalidate every 10 seconds (ISR)
+let socket:any;
 
-export default async function ChatPage() {
-  const messages = getMessages();
+export default function ChatPage() {
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState<string[]>([]);
+
+  useEffect(() => {
+    // Connect to socket server
+    socket = io(envirnment.api, {
+      transports: ["websocket"],
+    });
+
+    socket.on("connect", () => {
+      console.log("✅ Connected:", socket?.id);
+    });
+
+    socket.on("chat-message", (msg: string) => {
+      setMessages((prev) => [...prev, msg]);
+    });
+
+    return () => {
+      socket?.disconnect();
+    };
+  }, []);
+
+  const sendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (message.trim() && socket) {
+      socket.emit("chat-message", message);
+      setMessage("");
+    }
+  };
 
   return (
-    <div className="p-6 max-w-lg mx-auto space-y-6">
-      <h1 className="text-xl font-bold mb-4">💬 Simple ISR Chat</h1>
+    <div className="flex flex-col items-center p-6 max-w-md mx-auto">
+      <h1 className="text-2xl font-bold mb-4">💬 Live Chat</h1>
 
-      <div className="border p-4 rounded bg-gray-50 space-y-2 min-h-[200px]">
-        {messages.map((msg:any) => (
-          <div key={msg.id}>
-            <b>{msg.user}:</b> {msg.text}
+      <div className="w-full h-64 border rounded p-2 overflow-y-auto mb-3 bg-gray-50">
+        {messages.map((msg, i) => (
+          <div key={i} className="p-1 border-b text-sm">
+            {msg}
           </div>
         ))}
       </div>
 
-      <form action={sendMessage} className="space-y-2">
+      <form onSubmit={sendMessage} className="flex w-full gap-2">
         <input
-          type="text"
-          name="user"
-          placeholder="Your name"
-          className="border rounded p-2 w-full"
-        />
-        <input
-          type="text"
-          name="text"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className="border p-2 flex-1 rounded"
           placeholder="Type a message..."
-          className="border rounded p-2 w-full"
         />
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
+        <button type="submit" className="bg-blue-600 text-white px-4 rounded">
           Send
         </button>
       </form>
-
-      <p className="text-sm text-gray-500">
-        (This page revalidates every 10s, or immediately when a message is sent)
-      </p>
     </div>
   );
 }

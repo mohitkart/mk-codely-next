@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
+    "api_start": "ts-node server.ts",
     "start": "next start",
     "lint": "eslint"
   },
@@ -26,7 +27,10 @@
     "react-phone-input-2": "^2.15.1",
     "react-redux": "^9.2.0",
     "react-toastify": "^11.0.5",
-    "redux-persist-transform-encrypt": "^5.1.1"
+    "redux-persist-transform-encrypt": "^5.1.1",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -35,6 +39,7 @@
     "@types/react": "^19",
     "@types/react-date-range": "^1.4.10",
     "@types/react-dom": "^19",
+    "@types/socket.io-client": "^1.4.36",
     "eslint": "^9",
     "eslint-config-next": "15.5.3",
     "tailwindcss": "^4",
