@@ -11,7 +11,7 @@ export default function ChatPage() {
 
   useEffect(() => {
     // Connect to socket server
-    socket = io(envirnment.api, {
+    socket = io(envirnment.chat_api, {
       transports: ["websocket"],
     });
 

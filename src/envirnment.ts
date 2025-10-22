@@ -4,6 +4,7 @@ const envirnment = {
     app_name: (env.NEXT_PUBLIC_APP_NAME || 'my app').replaceAll(' ', '_'),
     secret_key: env.NEXT_PUBLIC_SEKRET_KEY,
     api: env.NEXT_PUBLIC_API_URL,
+    chat_api: env.NEXT_PUBLIC_CHAT_API_URL,
     userRoleId: env.NEXT_PUBLIC_USER_ROLE_ID,
     adminRoleId: env.NEXT_PUBLIC_ADMIN_ID,
     frontUrl: env.NEXT_PUBLIC_FRONT_URL,
