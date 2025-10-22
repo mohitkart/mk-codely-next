@@ -44,7 +44,7 @@ export default function Content() {
         });
         const fetchData = async () => {
             const userdata = await indexedDBStorage.getItem('userId')
-            setUserId(userdata)
+            setUserId(userdata||userId)
         }
         fetchData()
 
