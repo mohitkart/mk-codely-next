@@ -61,7 +61,7 @@ export default function Content() {
     const sendMessage = (e: React.FormEvent) => {
         e.preventDefault();
         if (message.trim() && socket) {
-            const id = 'hello_N15EAg'
+            const id = selectedUser.id
             socket.emit("chat-message", id, message);
             setMessage("");
         }
