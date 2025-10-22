@@ -39,7 +39,7 @@ export default function Content() {
             })
         });
         socket.on("chat-message", (msg: any) => {
-            setMessages((prev) => [...prev, msg]);
+            setMessages((prev) => [...prev, {...msg.message,from:msg.from}]);
         });
         const fetchData = async () => {
             const userdata = await indexedDBStorage.getItem('userId')
@@ -61,8 +61,14 @@ export default function Content() {
     const sendMessage = (e: React.FormEvent) => {
         e.preventDefault();
         if (message.trim() && socket) {
-            const id = selectedUser.id
-            socket.emit("chat-message", id, message);
+            const receiverid = selectedUser.id
+            const mes={
+                message:message,
+                createdAt:new Date().toISOString(),
+                id:getRandomCode(15)
+            }
+            messages.push(mes)
+            socket.emit("chat-message", receiverid, mes);
             setMessage("");
         }
     };
