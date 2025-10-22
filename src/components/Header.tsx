@@ -70,16 +70,16 @@ const router=useRouter()
         {/* <li>
           <Link className="hover:text-blue-500" to="/music">Music</Link>
         </li> */}
-        {/* <li className="relative">
-          <Link className="hover:text-blue-500 relative" to="/chat">
+        <li className="relative">
+          <Link className="hover:text-blue-500 relative" href="/chat">
             Chat
-            {unread ? (
+            {/* {unread ? (
               <span className="absolute top-[-4px] right-[-3px] bg-red-500 text-white text-xs font-medium rounded-full h-5 min-w-[20px] flex items-center justify-center">
                 {unread}
               </span>
-            ) : null}
+            ) : null} */}
           </Link>
-        </li> */}
+        </li>
         <li>
           <Link className="hover:text-blue-500" href="/expenses">Expenses</Link>
         </li>
