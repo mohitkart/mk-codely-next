@@ -27,14 +27,13 @@ export default function Content() {
             console.log("✅ Connected:", socket?.id);
         });
         socket.on("registered", (userId: any) => {
-            console.log(userId, `registered`);
             setUsers((users: any[]) => {
                 users.push(userId)
                 const uniqueMessages =
                     Array.from(
                         new Set(
-                            users.map(message => message.id))).map(id => {
-                                return users.find(message => message.id === id);
+                            users.map(message => message.userId.id))).map(id => {
+                                return users.find(message => message.userId.id === id);
                             });
                 return uniqueMessages
             })
