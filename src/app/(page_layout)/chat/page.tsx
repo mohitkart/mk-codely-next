@@ -14,12 +14,12 @@ export const revalidate = 60 // seconds
 
 export default async function ChatPage() {
   const res = await fetch(`${envirnment.frontUrl}api/messages`, {
-    next: { revalidate: 60 },
+    next: { revalidate: 30 },
   })
   const posts = await res.json()
 
   const conversationsres = await fetch(`${envirnment.frontUrl}api/messages/conversation`, {
-    next: { revalidate: 60 },
+    next: { revalidate: 30 },
   })
   const conversations=await conversationsres.json()
 
