@@ -2,27 +2,28 @@
   background-color: #155dfc;
 }
 
-.ancr-color a{
+.ancr-color a {
   color: #155dfc;
 }
 
 .text-primary {
   color: #155dfc;
 }
-button{
+
+button {
   cursor: pointer;
 }
 
 .border {
-    border-color: #dddddd;
+  border-color: #dddddd;
 }
 
 .border-t {
-    border-top-color: #dddddd;
+  border-top-color: #dddddd;
 }
 
 .border-b {
-    border-bottom-color: #dddddd;
+  border-bottom-color: #dddddd;
 }
 
 @import "tailwindcss";
@@ -55,61 +56,87 @@ body {
 
 
 .shine {
-    background: #eee;
-    background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
-    background-size: 200% 100%;
-    animation: 1.5s shine linear infinite;
-    min-height: 20px;
-    border-radius: 5px;
+  background: #eee;
+  background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
+  background-size: 200% 100%;
+  animation: 1.5s shine linear infinite;
+  min-height: 20px;
+  border-radius: 5px;
 }
 
 .shine.shineCard {
-    height: 250px;
+  height: 250px;
 }
 
 strong.shine {
-    display: block;
-    margin-bottom: 14px;
+  display: block;
+  margin-bottom: 14px;
 }
 
 @keyframes shine {
-    to {
-        background-position-x: -200%;
-    }
+  to {
+    background-position-x: -200%;
+  }
 }
 
 button {
-    cursor: pointer
+  cursor: pointer
 }
 
 .task-checkbox:checked+span {
-    text-decoration: line-through;
-    color: #9CA3AF;
+  text-decoration: line-through;
+  color: #9CA3AF;
 }
 
 .subtask-checkbox:checked+span {
-    text-decoration: line-through;
-    color: #9CA3AF;
+  text-decoration: line-through;
+  color: #9CA3AF;
 }
 
 .project-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .project-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 .material-symbols-outlined {
-    font-size: 18px;
-    vertical-align: middle;
+  font-size: 18px;
+  vertical-align: middle;
 }
 
 .subtask-item {
-    transition: all 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .subtask-item:hover {
-    background-color: #f9fafb;
+  background-color: #f9fafb;
+}
+
+/* message */
+.message-bubble {
+  max-width: 70%;
+}
+
+.sent {
+  margin-left: auto;
+}
+
+.received {
+  margin-right: auto;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
 }
