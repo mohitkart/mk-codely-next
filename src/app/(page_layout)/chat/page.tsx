@@ -12,16 +12,27 @@ export const metadata: Metadata = {
 
 export const revalidate = 60 // seconds
 
+const parseJson=(str:string)=>{
+ try{
+    const value=JSON.parse(str)
+    return value
+  }catch(err){
+    console.log("err",err)
+    return null
+  }
+}
+
 export default async function ChatPage() {
   const res = await fetch(`${envirnment.frontUrl}api/messages`, {
     next: { revalidate: 30 },
   })
-  const posts = await res.json()
-
+  const poststext = await res.text()
+  const posts:any[]=parseJson(poststext)||[]
   const conversationsres = await fetch(`${envirnment.frontUrl}api/messages/conversation`, {
     next: { revalidate: 30 },
   })
-  const conversations=await conversationsres.json()
+  const conversationstext=await conversationsres.text()
+  const conversations:any[]=parseJson(conversationstext)||[]
 
   return (
     <Content
