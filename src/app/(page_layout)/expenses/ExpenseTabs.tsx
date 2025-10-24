@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 export default function ExpenseTabs({}){
     const pathname=usePathname()
     return <>
-     <div className="mb-6">
+     <div className="mb-6 overflow-auto w-full">
             <div className="flex border-b border-gray-200">
                 <Link href="/expenses" className={`${pathname=='/expenses'?'bg-blue-500 text-white':''} py-2 px-4 font-medium text-gray-600 rounded-t-lg hover:bg-gray-100 transition duration-200`}>
                     Expenses
