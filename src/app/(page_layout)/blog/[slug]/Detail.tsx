@@ -183,13 +183,12 @@ export default function BlogDetail() {
                       </div>
                       <p className="text-gray-700">{`Great insights! I've been using WebAssembly in my recent projects and the performance gains are incredible. Looking forward to more articles on this topic.`}</p>
                       <div className="mt-3 flex items-center space-x-4">
-                        <button className="text-sm text-gray-500 hover:text-primary"><i className="fas fa-reply mr-1"></i> Reply</button>
-                        <button className="text-sm text-gray-500 hover:text-primary"><i className="fas fa-thumbs-up mr-1"></i> Like</button>
+                        <button className="text-sm text-gray-500 hover:text-primary"><span className="material-symbols-outlined">reply</span> Reply</button>
+                        <button className="text-sm text-gray-500 hover:text-primary"><span className="material-symbols-outlined">heart_plus</span> Like</button>
                       </div>
                     </div>
                   </div>
                 </div>
-
 
                 <div className="flex">
                   <ImageHtml
@@ -199,17 +198,18 @@ export default function BlogDetail() {
                   <div className="flex-1">
                     <div className="bg-white rounded-lg p-4 shadow-sm">
                       <div className="flex justify-between items-center mb-2">
-                        <h4 className="font-semibold">David Kim</h4>
-                        <span className="text-sm text-gray-500">5 days ago</span>
+                        <h4 className="font-semibold">Sarah Johnson</h4>
+                        <span className="text-sm text-gray-500">2 days ago</span>
                       </div>
-                      <p className="text-gray-700">{`I'm curious about the security implications of AI-generated code. Has there been any research on potential vulnerabilities introduced by these tools?`}</p>
+                      <p className="text-gray-700">{`Great insights! I've been using WebAssembly in my recent projects and the performance gains are incredible. Looking forward to more articles on this topic.`}</p>
                       <div className="mt-3 flex items-center space-x-4">
-                        <button className="text-sm text-gray-500 hover:text-primary"><i className="fas fa-reply mr-1"></i> Reply</button>
-                        <button className="text-sm text-gray-500 hover:text-primary"><i className="fas fa-thumbs-up mr-1"></i> Like</button>
+                        <button className="text-sm text-gray-500 hover:text-primary"><span className="material-symbols-outlined">reply</span> Reply</button>
+                        <button className="text-sm text-gray-500 hover:text-primary"><span className="material-symbols-outlined">heart_plus</span> Like</button>
                       </div>
                     </div>
                   </div>
                 </div>
+
               </div>
 
 

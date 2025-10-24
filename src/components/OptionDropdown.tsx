@@ -13,7 +13,7 @@ interface OptionDropdownProps {
   position?: 'absolute' | 'fixed';
   isCreate?: boolean;
   isSearch?: boolean;
-  type?: 'text' | 'number';
+  type?: 'text' | 'number'|any;
   searchText?: string;
   maxlength?: number | null;
   minlength?: number | null;

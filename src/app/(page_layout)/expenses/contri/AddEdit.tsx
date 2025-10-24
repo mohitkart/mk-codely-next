@@ -157,7 +157,7 @@ export default function AddEdit({ detail, action,persons,categories}: ModalType)
           <Controller
             name={`category`}
             control={control}
-            rules={{ required: true }}
+            rules={{ }}
             render={({ field }) => {
               return <OptionDropdown
                 value={field.value}

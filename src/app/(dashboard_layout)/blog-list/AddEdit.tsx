@@ -11,6 +11,7 @@ import { ADD_PAGE_NAME, PAGE_TABLE, PAGE_URL } from "./shared"
 import Link from "next/link"
 import Editor from "@/components/Editor"
 import UploadFile from "@/components/UploadFile"
+import FormControl from "@/components/FormControl"
 
 type FormType = {
   title: string
@@ -19,6 +20,7 @@ type FormType = {
   status: string
   category: string
   image: string
+  tags:string[]
 }
 
 
@@ -34,7 +36,7 @@ export default function AddEdit() {
     control,
     reset: resetForm,
     formState: { errors, defaultValues },
-  } = useForm<FormType>({ defaultValues: { title: '', description: '', status: '', category: '', short_description: '', image: '' } })
+  } = useForm<FormType>({ defaultValues: { title: '', description: '', status: 'active', category: '', short_description: '', image: '',tags:[]} })
   const { get: getDetail, isLoading: isDetailLoading } = FireApi()
   const { get: getCategory, isLoading: categoryLoading } = FireApi()
   const { post, isLoading: formLoading, put } = FireApi()
@@ -205,6 +207,27 @@ export default function AddEdit() {
               />
               {errors.description && <span className="text-red-500">This field is required</span>}
             </div>
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <span className="material-symbols-outlined text-gray-500 text-sm mr-1">category</span>
+                  Tags
+                </label>
+                <Controller
+                  name={`tags`}
+                  control={control}
+                  rules={{  }}
+                  render={({ field }) => {
+                    return <FormControl
+                    value={field.value}
+                    type="badge"
+                    onChange={e=>{
+                      setValue('tags',e)
+                    }}
+                    />
+                  }}
+                />
+                {errors.tags && <span className="text-red-500">This field is required</span>}
+              </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
                 <span className="material-symbols-outlined text-gray-500 text-sm mr-1">image</span>

@@ -78,10 +78,11 @@ export default function Content() {
     }).map((itm: any) => {
       return {
         ...itm,
-        categoryDetail: categories.find((cat: any) => cat.id == itm.category)
+        categoryDetail: categories.find((cat: any) => cat.id == itm.category),
+        createdAt:itm.createdAt||itm.date
       }
     }).sort((a: any, b: any) => {
-      return b.createdAt - a.createdAt
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     })
   }, [data, filters,categories])
 

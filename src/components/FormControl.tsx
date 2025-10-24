@@ -5,6 +5,32 @@ import {fire} from "./Swal";
 import datepipeModel from "@/utils/datepipemodel";
 import { isNumber } from "@/utils/shared";
 
+type PropsType={
+join?:string
+name?:string
+id?:string
+valueType?:'string' | 'object';
+displayValue?:string
+placeholder?:string
+type:string
+options?:any[]
+error?:any
+label?:string
+required?:boolean
+onChange:(_:any)=>void
+maxlength?:number;
+minlength?:number;
+min?:string;
+className?:string
+value:any;
+disabled?:boolean
+position?:'absolute'|'fixed'|undefined
+searchType?:string
+isLoading?:boolean
+searchText?:string
+isCreate?:boolean
+}
+
 const FormControl = memo(function FormControl({
   join = "",
   name,
@@ -18,9 +44,9 @@ const FormControl = memo(function FormControl({
   label,
   required = false,
   onChange = (_:any) => {},
-  maxlength = "",
-  minlength = "",
-  min = "",
+  maxlength = undefined,
+  minlength = undefined,
+  min = '',
   className = "",
   value,
   disabled=false,
@@ -29,7 +55,7 @@ const FormControl = memo(function FormControl({
   isLoading=false,
   searchText='Search',
   isCreate=false
-}: any) {
+}: PropsType) {
   const [text, setText] = useState("");
   const [dob, setDob] = useState<any>({
     year: "",
@@ -39,8 +65,10 @@ const FormControl = memo(function FormControl({
 
   const add = () => {
     const arr = value || [];
-    if (text) {
-      arr.push(text);
+    const t:string=text.trim()
+    if (t) {
+      const ta=t.split(',').map(t=>t.trim())
+      arr.push(...ta);
     }
     onChange(arr);
     setText("");
@@ -269,7 +297,7 @@ const FormControl = memo(function FormControl({
           />
         ) : type == "badge" ? (
           <>
-            <div className="flex">
+            <div className="flex gap-3">
               <input
                 type="text"
                 className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -280,21 +308,21 @@ const FormControl = memo(function FormControl({
               />
               <button
                 type="button"
-                className="btn btn-primary ml-2"
+                className="px-4 py-2 rounded bg-blue-500 text-white text-[14px]"
                 onClick={add}
               >
                 Add
               </button>
             </div>
-            <div className="">
+            <div className="flex gap-1 flex-wrap mt-2">
               {value?.map((itm: any, i: any) => {
                 return (
-                  <span className="badge badge-primary m-1" key={i}>
+                  <span className="px-2 py-1 rounded bg-blue-500 text-white text-[12px] flex gap-1" key={i}>
                     {itm}
                     <i
-                      className="fa fa-times ml-1"
+                      className="material-symbols-outlined inline-block !text-[15px] text-red-500 cursor-pointer"
                       onClick={() => remove(i)}
-                    ></i>
+                    >close</i>
                   </span>
                 );
               })}

@@ -162,7 +162,7 @@ export default function Content() {
 
                 if (filters.search) {
                     const searchValue = filters.search.toLowerCase().trim();
-                    const title = item.title?.toLowerCase() || '';
+                    const title = item.name?.toLowerCase() || '';
                     const description = item.description?.toLowerCase() || '';
                     if (!title.includes(searchValue) && !description.includes(searchValue))
                         return false;
