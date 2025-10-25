@@ -16,6 +16,11 @@ const envirnment = {
         storageBucket: env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
         messagingSenderId: env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
         databaseURL: env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
+    },
+    email:{
+        user:env.NEXT_PUBLIC_EMAIL_USER||env.EMAIL_USER,
+        password:env.NEXT_PUBLIC_EMAIL_PASS||env.EMAIL_PASS,
+        from:env.NEXT_PUBLIC_EMAIL_FROM|env.EMAIL_FROM,
     }
 }
 export default envirnment
