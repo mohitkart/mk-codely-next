@@ -104,12 +104,12 @@ export default function BlogDetail() {
               </div>
             </header>
 
-            {loaderData?.image ? <>
+            {(loaderData?.image||category?.image)? <>
               <div className="rounded-xl overflow-hidden mb-8 shadow-lg">
                 <ImageHtml
                   height={415}
                   width={970}
-                  src={noImg(loaderData?.image,'blogs')} alt={loaderData?.title} className="bg-gray-200 w-full h-auto object-cover" />
+                  src={noImg((loaderData?.image||category?.image),'blogs')} alt={loaderData?.title} className="bg-gray-200 w-full h-auto object-cover" />
               </div>
             </> : <></>}
 

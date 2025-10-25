@@ -41,7 +41,13 @@ const UploadFile = ({ multiple = false, modal = 'default', type = 'image', label
 
     const remove = (img: string) => {
         loaderHtml(true)
-        deleteFile(img).then(res => {
+        let v=img
+        if (modal) {
+            const i = img.split('/')
+            v = `assets/${modal}/${img}`
+            if (i.length > 1) v = img
+        }
+        deleteFile(v).then(res => {
             if (res.success) {
 
             }
