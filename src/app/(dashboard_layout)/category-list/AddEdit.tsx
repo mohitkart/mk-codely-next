@@ -1,11 +1,10 @@
 'use client'
-import { getColor } from "@/components/MkChart"
 import OptionDropdown from "@/components/OptionDropdown"
 import FireApi from "@/utils/firebaseApi.utils"
 import { loaderHtml } from "@/utils/shared"
 import { statusList } from "@/utils/shared.utils"
 import { useParams, useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useForm, SubmitHandler, Controller } from "react-hook-form"
 import { ADD_PAGE_NAME, PAGE_CATEGORY_TYPES, PAGE_TABLE, PAGE_URL } from "./shared"
 import Link from "next/link"
@@ -37,9 +36,6 @@ export default function AddEdit() {
   } = useForm<FormType>({ defaultValues: { name: '', description: '', status: 'active', type: '', short_description: '', image: '' } })
   const { get: getDetail, isLoading: isDetailLoading } = FireApi()
   const { post, isLoading: formLoading, put } = FireApi()
-
-
-  const [categories, setCategories] = useState<any[]>([])
   const onSubmit: SubmitHandler<FormType> = (data) => {
     loaderHtml(true)
     if (slug) {

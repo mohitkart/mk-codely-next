@@ -36,7 +36,7 @@ export default function AddEdit() {
     control,
     reset: resetForm,
     formState: { errors, defaultValues },
-  } = useForm<FormType>({ defaultValues: { title: '', description: '', status: '', category: '', package: '', code: [], short_description: '' } })
+  } = useForm<FormType>({ defaultValues: { title: '', description: '', status: 'active', category: '', package: '', code: [], short_description: '' } })
   const { get: getDetail, isLoading: isDetailLoading } = FireApi()
   const { get: getCategory, isLoading: categoryLoading } = FireApi()
   const { post, isLoading: formLoading, put } = FireApi()
@@ -241,7 +241,7 @@ export default function AddEdit() {
               <Controller
                 name={'description'}
                 control={control}
-                rules={{ required: true }}
+                rules={{}}
                 render={({ field }) => {
                   return <Editor
                     className=''

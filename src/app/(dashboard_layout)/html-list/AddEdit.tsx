@@ -39,7 +39,7 @@ export default function AddEdit() {
     control,
     reset: resetForm,
     formState: { errors, defaultValues },
-  } = useForm<FormType>({ defaultValues: { title: '', description: '', status: '', category: '', package: '', short_description: '',html: '',
+  } = useForm<FormType>({ defaultValues: { title: '', description: '', status: 'active', category: '', package: '', short_description: '',html: '',
   css: '',
   scss: '',
   js: '' } })
@@ -216,7 +216,7 @@ export default function AddEdit() {
               <Controller
                 name={'description'}
                 control={control}
-                rules={{ required: true }}
+                rules={{ }}
                 render={({ field }) => {
                   return <Editor
                     className=''

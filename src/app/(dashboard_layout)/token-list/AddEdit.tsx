@@ -8,7 +8,6 @@ import { useEffect } from "react"
 import { useForm, SubmitHandler, Controller } from "react-hook-form"
 import { ADD_PAGE_NAME, PAGE_TABLE, PAGE_URL } from "./shared"
 import Link from "next/link"
-import UploadFile from "@/components/UploadFile"
 import packageModel from "@/utils/package"
 
 type FormType = {
@@ -31,7 +30,7 @@ export default function AddEdit() {
     control,
     reset: resetForm,
     formState: { errors, defaultValues },
-  } = useForm<FormType>({ defaultValues: { title: '', status: 'active', package: '', short_description: '', token: getRandomCode(40) } })
+  } = useForm<FormType>({ defaultValues: { title: '', status: 'active', package: '', short_description: '', token: getRandomCode(60) } })
   const { get: getDetail, isLoading: isDetailLoading } = FireApi()
   const { post, isLoading: formLoading, put } = FireApi()
   const onSubmit: SubmitHandler<FormType> = (data) => {

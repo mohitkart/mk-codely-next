@@ -94,6 +94,21 @@ export default function Content() {
                 </>
             }
         },
+           {
+            key: 'lastLogin', name: 'Last Login', sort: true,
+            render: (row) => {
+                return <>
+                    {datepipeModel.datetime(row?.lastLogin)}
+                </>
+            }
+        },
+         {
+            key: 'userAgent', name: 'User Agent', sort: true,
+            render: (row) => {
+                return <span className="">{row?.userAgent}</span>
+            }
+        },
+        
         {
             key: 'status', name: 'Status',
             render: (itm) => {

@@ -36,7 +36,7 @@ export default function AddEdit() {
     control,
     reset: resetForm,
     formState: { errors, defaultValues },
-  } = useForm<FormType>({ defaultValues: { english: '', description: '', status: '', hindi: '', short_description: '',image:'' } })
+  } = useForm<FormType>({ defaultValues: { english: '', description: '', status: 'active', hindi: '', short_description: '',image:'' } })
   const { get: getDetail, isLoading: isDetailLoading } = FireApi()
   const { get: getCategory, isLoading: categoryLoading } = FireApi()
   const { post, isLoading: formLoading, put } = FireApi()
