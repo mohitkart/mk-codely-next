@@ -15,6 +15,7 @@
     "@uiw/codemirror-themes": "^4.25.2",
     "@uiw/react-codemirror": "^4.25.2",
     "axios": "^1.12.2",
+    "bcrypt": "^6.0.0",
     "echarts-for-react": "^3.0.2",
     "firebase": "^12.3.0",
     "idb": "^8.0.3",
@@ -35,6 +36,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/bcrypt": "^6.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-date-range": "^1.4.10",

@@ -122,6 +122,7 @@ export default function Content() {
         {
             key: 'action', name: 'Action',
             render: (itm) => {
+               const roleName=categories.find(fitm => fitm.id == itm?.role)?.name
                 return <>
                     <div className="flex space-x-2">
                         <Link href={`html/${itm.id}`} target="_blank" className="action-btn" title="View">
@@ -130,11 +131,13 @@ export default function Content() {
                         <Link href={`${PAGE_URL}/edit/${itm.id}`} className="action-btn" title="View">
                             <span className="material-symbols-outlined">edit</span>
                         </Link>
+                        {roleName!='admin'?<>
                         <button className="action-btn" title="Delete"
                             onClick={() => remove(itm.id)}
                         >
                             <span className="material-symbols-outlined">delete</span>
                         </button>
+                        </>:<></>}
                     </div>
                 </>
             }

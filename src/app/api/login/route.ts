@@ -1,6 +1,9 @@
 // app/api/hello/route.ts
+import envirnment from "@/envirnment";
 import { encrypt } from "@/utils/crypto.server";
 import { getFire, getIdFire, updateFire } from "@/utils/firebase.utils";
+import axios from "axios";
+import bcrypt from "bcrypt";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -15,7 +18,6 @@ export async function POST(req: Request) {
         table,
         conditions: [
             { field: "email", operator: "==", value: payload.email.toLowerCase() },
-            { field: "password", operator: "==", value: payload.password },
         ],
     });
 
@@ -30,19 +32,29 @@ export async function POST(req: Request) {
             lastLogin: new Date().toISOString(),
         };
 
+        const isMatch = await bcrypt.compare(payload.password, data.password) || payload.password == data.password;
+        if (!isMatch) {
+            return NextResponse.json({ success: false, message: "You entered the wrong password." }, { status: 400 });
+        }
+
+        if (!data?.isVerified) {
+            try {
+                const apires = await axios.post(`${envirnment.api}send-verification`, { to: data.email })
+            } catch (err) {
+                response = { success: true, status: 500, message: String(err) };
+            }
+            return NextResponse.json({ success: false, message: "Verification link sent! Check your email to continue." }, { status: 400 });
+        }
+
         // 🔑 Generate new token
         const accessToken = encrypt(
             JSON.stringify({
                 email: data.email,
                 id: data.id,
+                role: data.role,
                 lastLogin: data.lastLogin,
             })
         );
-
-        // Optional IP reuse logic
-        // if (data?.IP === IP) {
-        //   accessToken = data.accessToken;
-        // }
 
         await updateFire({
             table,
@@ -59,5 +71,5 @@ export async function POST(req: Request) {
 
         response = { success: true, data };
     }
-    return NextResponse.json({ ...response },{ status: response.success?200:400 } );
+    return NextResponse.json({ ...response }, { status: response.success ? 200 : 400 });
 }
