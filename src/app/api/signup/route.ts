@@ -60,7 +60,7 @@ export async function POST(req: Request) {
         });
 
         try {
-            const apires = await axios.post(`${envirnment.api}send-verification`, { to: data.email })
+            const apires = await axios.post(`${envirnment.frontUrl}api/send-verification`, { to: data.email })
         } catch (err) {
             response = { success: true, status: 500, message: String(err) };
         }
