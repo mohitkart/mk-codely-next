@@ -17,7 +17,6 @@ const parseJson=(str:string)=>{
     const value=JSON.parse(str)
     return value
   }catch(err){
-    console.log("err",err)
     return null
   }
 }

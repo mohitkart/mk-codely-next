@@ -1,8 +1,8 @@
-// app/api/hello/route.ts
-import envirnment from "@/envirnment";
+
+
 import { encrypt } from "@/utils/crypto.server";
 import { getFire, getIdFire, updateFire } from "@/utils/firebase.utils";
-import axios from "axios";
+import { sendVerificationEmail } from "@/utils/mailer.shared";
 import bcrypt from "bcrypt";
 import { NextResponse } from "next/server";
 
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     const res = await getFire({
         table,
         conditions: [
-            { field: "email", operator: "==", value: payload.email.toLowerCase() },
+            { field: "email", operator: "==", value: payload.email.toLowerCase().trim() },
         ],
     });
 
@@ -38,10 +38,9 @@ export async function POST(req: Request) {
         }
 
         if (!data?.isVerified) {
-            try {
-                const apires = await axios.post(`${envirnment.frontUrl}api/send-verification`, { to: data.email })
-            } catch (err) {
-                response = { success: true, status: 500, message: String(err) };
+            const res=await sendVerificationEmail({data:data})
+            if(!res.success){
+                return NextResponse.json(res, { status: 400 });
             }
             return NextResponse.json({ success: false, message: "Verification link sent! Check your email to continue." }, { status: 400 });
         }

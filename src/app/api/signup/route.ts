@@ -1,10 +1,10 @@
-// app/api/hello/route.ts
+
 import { encrypt } from "@/utils/crypto.server";
 import { addFire, getFire } from "@/utils/firebase.utils";
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
-import axios from "axios";
 import envirnment from "@/envirnment";
+import { sendVerificationEmail } from "@/utils/mailer.shared";
 
 export async function GET() {
     return NextResponse.json({ message: "Hello from API!" });
@@ -19,51 +19,61 @@ export async function POST(req: Request) {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(payload.password, saltRounds);
 
-    // 🔍 Check user exists
-    const res = await getFire({
-        table,
-        conditions: [
-            { field: "email", operator: "==", value: payload.email.toLowerCase().trim() },
-        ],
-    });
+    if (!payload.email || !payload.password || !payload.name) {
+        return NextResponse.json({ success: true, status: 200, message: 'Please enter required fields' }, { status: 400 });
+    }
 
-    const fres = res.data;
-    let response = { success: true, status: 200, message: 'Signup successfully' };
 
-    if (fres.length) {
-        response = { success: false, status: 400, message: "User is already exist" };
-    } else {
-        const data: any = {
-            ...payload,
-            password: hashedPassword,
-            role: envirnment.userRoleId,
-            status:'active',
-            isVerified:false,
-            platform: headers[`sec-ch-ua-platform`],
-            origin: headers[`referer`],
-            createdAt: new Date(),
-            userAgent: headers[`user-agent`],
-        };
-
-        // 🔑 Generate new token
-        const accessToken = encrypt(
-            JSON.stringify({
-                email: data.email,
-                id: data.id,
-                role: data.role,
-            })
-        );
-
-        const res = await addFire({
+    try {
+        // 🔍 Check user exists
+        const res = await getFire({
             table,
-            payload: { ...data, accessToken},
+            conditions: [
+                { field: "email", operator: "==", value: payload.email.toLowerCase().trim() },
+            ],
         });
 
-        try {
-            const apires = await axios.post(`${envirnment.frontUrl}api/send-verification`, { to: data.email })
-        } catch (err) {
-            response = { success: true, status: 500, message: String(err) };
+        const fres = res.data;
+        let response = { success: true, status: 200, message: 'Signup successfully' };
+
+
+        if (fres.length) {
+            response = { success: false, status: 400, message: "User is already exist" };
+        } else {
+            const data: any = {
+                ...payload,
+                password: hashedPassword,
+                role: envirnment.userRoleId,
+                status: 'active',
+                isVerified: false,
+                createdAt: new Date(),
+                platform: headers[`sec-ch-ua-platform`],
+                origin: headers[`referer`],
+                userAgent: headers['sec-ch-ua'] || headers[`user-agent`],
+            };
+
+            // 🔑 Generate new token
+            const accessToken = encrypt(
+                JSON.stringify({
+                    email: data.email,
+                    id: data.id,
+                    role: data.role,
+                })
+            );
+
+            const res = await addFire({
+                table,
+                payload: { ...data, accessToken },
+            });
+
+            const vres = await sendVerificationEmail({ data: { ...res.data } })
+            if (!vres.success) {
+                return NextResponse.json(vres, { status: 400 });
+            }
         }
+        return NextResponse.json({ ...response, headers }, { status: response?.status });
+    } catch (err: any) {
+        return NextResponse.json({ success: false, message: err.message }, { status: 500 });
     }
-    return NextResponse.json({ ...response ,headers}, { status: response?.status });
+
 }
