@@ -14,12 +14,11 @@ import datepipeModel from "@/utils/datepipemodel";
 
 type ModalType = {
   detail: any
-  persons:PersonType[]
   categories:CategoryType[]
   action: (_: { action: 'submit' | 'close', value?: any }) => void
 }
 
-export default function AddEdit({ detail, action,persons,categories}: ModalType) {
+export default function AddEdit({ detail, action,categories}: ModalType) {
   const user: any = useSelector((state: RootState) => state.user.data);
 
   const {

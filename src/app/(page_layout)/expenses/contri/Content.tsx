@@ -52,7 +52,7 @@ export default function Content() {
   const [balanceModal, setBalanceModal] = useState<any>();
   const [filters, setFilters] = useState({
     search: '',
-    sortBy: 'createdAt desc',
+    sortBy: 'date desc',
     status: 'Pending',
     paidBy: [],
     persons:[],
@@ -218,7 +218,7 @@ export default function Content() {
       ?.sort((a: any, b: any) => {
         const aVal = a?.[key];
         const bVal = b?.[key];
-        if (key === 'createdAt' || key === 'updatedAt') {
+        if (key === 'createdAt'|| key === 'date' || key === 'updatedAt') {
           return new Date(bVal).getTime() - new Date(aVal).getTime();
         }
         if (key === 'price') {
@@ -241,7 +241,7 @@ export default function Content() {
   const sortByList = [
     {
       name: 'Latest First',
-      id: 'createdAt desc'
+      id: 'date desc'
     },
     {
       name: 'Name - A-Z',

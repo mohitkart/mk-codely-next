@@ -7,6 +7,7 @@ import { loaderHtml } from "@/utils/shared";
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { ADD_PAGE_NAME, EXPENSE_CATEGORY_TABLE, EXPENSE_STATUS_LIST, EXPENSE_TYPE_LIST, PAGE_NAME, PAGE_TABLE } from "./shared";
+import { EXPENSE_CATEGORY_TABLE as contri_table } from "./contri/shared"
 import { fireDateParse, FirestoreConditions } from "@/utils/firebase.utils";
 import { getColor } from "@/components/MkChart";
 import OptionDropdown from "@/components/OptionDropdown";
@@ -17,8 +18,8 @@ import Modal from "@/components/Modal";
 import AddEdit from "./AddEdit";
 import ExpenseTabs from "./ExpenseTabs";
 import { createBackup } from "@/utils/backup";
-import Balance from "./Balance";
 import MkDateRangePicker, { getRange } from "@/components/MkDateRangePicker";
+import { indexedDBStorage } from "@/utils/indexedDBStorage";
 
 export type ExpenseForm = {
   id?: string | null
@@ -46,23 +47,21 @@ export default function Content() {
   const user: any = useSelector((state: RootState) => state.user.data);
   const [list, setList] = useState<ExpenseForm[]>([])
   const [categories, setCategories] = useState<CategoryType[]>([])
-  const [persons, setPersons] = useState<PersonType[]>([]);
   const [addeditModal, setAddeditModal] = useState<any>();
   const [balanceModal, setBalanceModal] = useState<any>();
-  const range=getRange('This Month')
+  const range = getRange('This Month')
   const [filters, setFilters] = useState({
     search: '',
-    sortBy: 'createdAt desc',
+    sortBy: 'date desc',
     status: '',
-    type:'',
-    category:[],
+    type: '',
+    category: [],
     startDate: range.startDate,
-    range:range.range,
-    endDate:range.endDate,
+    range: range.range,
+    endDate: range.endDate,
   })
   const { get: getList, isLoading: isListLoading } = FireApi()
   const { get: getCategory, isLoading: categoryLoading } = FireApi()
-  const { get: getPersons, isLoading: personsLoading } = FireApi()
   const { deleteApi, isLoading: isActionLoading } = FireApi()
 
 
@@ -85,7 +84,7 @@ export default function Content() {
     })
   }
 
- const getData = async () => {
+  const getData = async () => {
     const conditions: FirestoreConditions[] = [
       { field: 'addedBy', operator: '==', value: user?.id },
     ]
@@ -96,7 +95,7 @@ export default function Content() {
       conditions.push({ field: 'date', operator: '>=', value: startDate })
       conditions.push({ field: 'date', operator: '<=', value: endDate })
     }
-   
+
     let data = []
 
     if (user) {
@@ -109,28 +108,48 @@ export default function Content() {
           status: itm.status || 'Pending'
         }))
       }
-       loaderHtml(false)
+      loaderHtml(false)
+    } else {
+      const datad = await indexedDBStorage.getItem(PAGE_TABLE)
+      data = datad || []
     }
-    
     setList(data)
   }
   const getCategories = async () => {
-    const res = await getCategory(EXPENSE_CATEGORY_TABLE, [{ field: 'addedBy', operator: '==', value: user?.id },])
     let data = []
-    if (res.data) {
-      data = res.data.map((itm: any, i: any) => ({ ...itm, color: getColor(i) })).sort((a: any, b: any) => {
-        if (a.name.toLocaleLowerCase() < b.name.toLocaleLowerCase()) return -1; // a comes before b
-        if (a.name.toLocaleLowerCase() > b.name.toLocaleLowerCase()) return 1;  // a comes after b
-        return 0;
-      })
+    let data1 = []
+    if (user) {
+      const res = await getCategory(EXPENSE_CATEGORY_TABLE, [{ field: 'addedBy', operator: '==', value: user?.id },])
+      const res1 = await getCategory(contri_table, [{ field: 'addedBy', operator: '==', value: user?.id },])
+
+      if (res.data) {
+        data = res.data.map((itm: any, i: any) => ({ ...itm, color: getColor(i) })).sort((a: any, b: any) => {
+          if (a.name.toLocaleLowerCase() < b.name.toLocaleLowerCase()) return -1; // a comes before b
+          if (a.name.toLocaleLowerCase() > b.name.toLocaleLowerCase()) return 1;  // a comes after b
+          return 0;
+        })
+      }
+
+      if (res1.data) {
+        data1 = res1.data.map((itm: any, i: any) => ({ ...itm, color: getColor(i) })).sort((a: any, b: any) => {
+          if (a.name.toLocaleLowerCase() < b.name.toLocaleLowerCase()) return -1; // a comes before b
+          if (a.name.toLocaleLowerCase() > b.name.toLocaleLowerCase()) return 1;  // a comes after b
+          return 0;
+        })
+      }
     }
-    setCategories(data)
+    else {
+
+    }
+
+
+    setCategories([...data, ...data1])
   }
 
 
   useEffect(() => {
     getData()
-  }, [filters.startDate,filters.endDate])
+  }, [filters.startDate, filters.endDate])
 
   useEffect(() => {
     if (user) {
@@ -151,7 +170,7 @@ export default function Content() {
     ]
     const f: any = filters
     if (keys.find(key => f[key] ? true : false)) value = true
-    if(f.category?.length) value=true
+    if (f.category?.length) value = true
     return value
   }, [filters])
 
@@ -159,8 +178,8 @@ export default function Content() {
     const f = {
       status: '',
       search: '',
-      type:'',
-      category:[],
+      type: '',
+      category: [],
     }
     filter(f)
   }
@@ -178,7 +197,7 @@ export default function Content() {
       ?.filter((item: any) => {
         if (filters.status && item.status !== filters.status) return false;
         if (filters.type && item.type !== filters.type) return false;
-        if (filters.category.length && !filters.category.some(id=>item.category==id)) return false;
+        if (filters.category.length && !filters.category.some(id => item.category == id)) return false;
 
         if (filters.search) {
           const searchValue = filters.search.toLowerCase().trim();
@@ -193,7 +212,7 @@ export default function Content() {
       ?.sort((a: any, b: any) => {
         const aVal = a?.[key];
         const bVal = b?.[key];
-        if (key === 'createdAt' || key === 'updatedAt') {
+        if (key === 'createdAt' ||key==='date'|| key === 'updatedAt') {
           return new Date(bVal).getTime() - new Date(aVal).getTime();
         }
         if (key === 'price') {
@@ -203,22 +222,22 @@ export default function Content() {
       });
   }, [list, filters, categories]);
 
-   const totalGive = useMemo(() => {
-    const t = data?.filter(itm=>itm.type=='Give').map((itm: any) => Number(itm.price || 0)).reduce((p, c) => c + p, 0)
+  const totalGive = useMemo(() => {
+    const t = data?.filter(itm => itm.type == 'Give').map((itm: any) => Number(itm.price || 0)).reduce((p, c) => c + p, 0)
     return t
   }, [data])
 
-   const totalGot = useMemo(() => {
-    const t = data?.filter(itm=>itm.type=='Got').map((itm: any) => Number(itm.price || 0)).reduce((p, c) => c + p, 0)
+  const totalGot = useMemo(() => {
+    const t = data?.filter(itm => itm.type == 'Got').map((itm: any) => Number(itm.price || 0)).reduce((p, c) => c + p, 0)
     return t
   }, [data])
 
-  const totalBalance=totalGot-totalGive
+  const totalBalance = totalGot - totalGive
 
   const sortByList = [
     {
       name: 'Latest First',
-      id: 'createdAt desc'
+      id: 'date desc'
     },
     {
       name: 'Name - A-Z',
@@ -239,7 +258,7 @@ export default function Content() {
     })
   }
 
-  const formAction = (e: any) => {
+  const formAction = async (e: any) => {
     setAddeditModal(null)
     if (e.action == 'submit') {
       if (addeditModal?.id) {
@@ -249,20 +268,17 @@ export default function Content() {
           ...arr[index],
           ...e.value
         }
+
+        await indexedDBStorage.setItem(PAGE_TABLE, arr)
         setList([...arr])
       } else {
         const arr: any[] = [...list]
         arr.push(e.value)
+        await indexedDBStorage.setItem(PAGE_TABLE, arr)
         setList([...arr])
       }
     }
   }
-
-  const exportFuc = () => {
-    createBackup({ table: PAGE_TABLE, data: list })
-  }
-
-
 
   return <>
     <div className="container mx-auto px-4 py-8">
@@ -296,8 +312,8 @@ export default function Content() {
       <div className="lg:col-span-2">
         <div className="flex flex-wrap gap-4 text-blue-500">
           <span>Total Give: <span className="font-bold">{pipeModel.currency(totalGive)}</span></span>
-           <span>Total Got:  <span className="font-bold">{pipeModel.currency(totalGot)}</span></span>
-           <span>Total Balance:  <span className={`font-bold ${totalBalance<0?'text-red-500':'text-green-500'}`}>{pipeModel.currency(totalGot-totalGive)}</span></span>
+          <span>Total Got:  <span className="font-bold">{pipeModel.currency(totalGot)}</span></span>
+          <span>Total Balance:  <span className={`font-bold ${totalBalance < 0 ? 'text-red-500' : 'text-green-500'}`}>{pipeModel.currency(totalGot - totalGive)}</span></span>
         </div>
         <div className="bg-white rounded-lg shadow-md p-6">
           <div id="search-filter" className="mb-4 p-4 bg-gray-50 rounded-md">
@@ -306,29 +322,29 @@ export default function Content() {
                 value={filters.search}
                 onChange={e => filter({ search: e })}
                 type="text" placeholder="Search..." className="px-3 py-2 border border-gray-300 rounded-md" />
-                <div>
-                  <MkDateRangePicker
+              <div>
+                <MkDateRangePicker
                   value={{
-                    startDate:filters.startDate,
-                    endDate:filters.endDate,
-                    range:filters.range
+                    startDate: filters.startDate,
+                    endDate: filters.endDate,
+                    range: filters.range
                   }}
-                  onChange={e=>{
+                  onChange={e => {
                     filter({
                       startDate: e.startDate,
                       endDate: e.endDate,
                       range: e.range
                     })
                   }}
-                  />
-                  <div className="text-right">
-                    {filters.startDate?<>
-                      <span className="text-blue-500 cursor-pointer text-[13px]"
-                    onClick={()=>filter({startDate:'',endDate:'',range:''})}
+                />
+                <div className="text-right">
+                  {filters.startDate ? <>
+                    <span className="text-blue-500 cursor-pointer text-[13px]"
+                      onClick={() => filter({ startDate: '', endDate: '', range: '' })}
                     >Clear</span>
-                    </>:<></>}
-                  </div>
+                  </> : <></>}
                 </div>
+              </div>
               <div className="min-w-[200px]">
                 <OptionDropdown
                   value={filters.category}
@@ -401,7 +417,7 @@ export default function Content() {
                     <div className="text-sm text-gray-600 mb-2">
                       <span className="material-symbols-outlined align-text-bottom text-sm mr-1">person</span>
                       Type: <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${item.type=='Got'?'text-green-500 bg-green-200':'text-red-500 bg-red-200'}`}
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${item.type == 'Got' ? 'text-green-500 bg-green-200' : 'text-red-500 bg-red-200'}`}
                       >{item?.type}</span>
                     </div>
                     <div className="text-sm text-gray-600">
@@ -441,23 +457,10 @@ export default function Content() {
         <AddEdit
           detail={addeditModal}
           action={formAction}
-          persons={persons}
           categories={categories}
         />
       </>}
       result={() => setAddeditModal(null)}
-    /> : <></>}
-    {balanceModal ? <Modal
-      title={`View Balance`}
-      className="max-w-[1200px]"
-      body={<>
-        <Balance
-          data={data}
-          persons={persons}
-          categories={categories}
-        />
-      </>}
-      result={() => setBalanceModal(null)}
     /> : <></>}
   </>;
 }
