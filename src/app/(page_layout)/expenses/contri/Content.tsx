@@ -19,6 +19,7 @@ import { createBackup } from "@/utils/backup";
 import Balance from "./Balance";
 import ExpenseTabs from "../ExpenseTabs";
 import MkDateRangePicker from "@/components/MkDateRangePicker";
+import { indexedDBStorage } from "@/utils/indexedDBStorage";
 
 export type ExpenseForm = {
   id?: string | null
@@ -55,11 +56,11 @@ export default function Content() {
     sortBy: 'date desc',
     status: 'Pending',
     paidBy: [],
-    persons:[],
-    category:[],
+    persons: [],
+    category: [],
     startDate: '',
     endDate: '',
-    range:''
+    range: ''
   })
   const { get: getList, isLoading: isListLoading } = FireApi()
   const { get: getCategory, isLoading: categoryLoading } = FireApi()
@@ -101,7 +102,7 @@ export default function Content() {
     if (filters.status) {
       conditions.push({ field: 'status', operator: '==', value: filters.status })
     }
-   
+
     let data = []
 
     if (user) {
@@ -114,47 +115,57 @@ export default function Content() {
           status: itm.status || 'deactive'
         }))
       }
-       loaderHtml(false)
+      loaderHtml(false)
+    } else {
+      const datad = await indexedDBStorage.getItem(PAGE_TABLE)
+      data = datad || []
     }
-    
     setList(data)
   }
 
   const getCategories = async () => {
-    const res = await getCategory(EXPENSE_CATEGORY_TABLE, [{ field: 'addedBy', operator: '==', value: user?.id },])
     let data = []
-    if (res.data) {
-      data = res.data.map((itm: any, i: any) => ({ ...itm, color: getColor(i) })).sort((a: any, b: any) => {
-        if (a.name.toLocaleLowerCase() < b.name.toLocaleLowerCase()) return -1; // a comes before b
-        if (a.name.toLocaleLowerCase() > b.name.toLocaleLowerCase()) return 1;  // a comes after b
-        return 0;
-      })
+    if (user) {
+      const res = await getCategory(EXPENSE_CATEGORY_TABLE, [{ field: 'addedBy', operator: '==', value: user?.id },])
+      if (res.data) {
+        data = res.data.map((itm: any, i: any) => ({ ...itm, color: getColor(i) })).sort((a: any, b: any) => {
+          if (a.name.toLocaleLowerCase() < b.name.toLocaleLowerCase()) return -1; // a comes before b
+          if (a.name.toLocaleLowerCase() > b.name.toLocaleLowerCase()) return 1;  // a comes after b
+          return 0;
+        })
+      }
+    } else {
+      const datad = await indexedDBStorage.getItem(EXPENSE_CATEGORY_TABLE)
+      data = datad || []
     }
     setCategories(data)
   }
 
   const getPersonsList = async () => {
-    const res = await getPersons(EXPENSE_PERSON_TABLE, [{ field: 'addedBy', operator: '==', value: user?.id },])
     let data = []
-    if (res.data) {
-      data = res.data.map((itm: any, i: any) => ({ ...itm, color: getColor(i) })).sort((a: any, b: any) => {
-        if (a.name.toLocaleLowerCase() < b.name.toLocaleLowerCase()) return -1; // a comes before b
-        if (a.name.toLocaleLowerCase() > b.name.toLocaleLowerCase()) return 1;  // a comes after b
-        return 0;
-      })
+    if (user) {
+      const res = await getPersons(EXPENSE_PERSON_TABLE, [{ field: 'addedBy', operator: '==', value: user?.id },])
+      if (res.data) {
+        data = res.data.map((itm: any, i: any) => ({ ...itm, color: getColor(i) })).sort((a: any, b: any) => {
+          if (a.name.toLocaleLowerCase() < b.name.toLocaleLowerCase()) return -1; // a comes before b
+          if (a.name.toLocaleLowerCase() > b.name.toLocaleLowerCase()) return 1;  // a comes after b
+          return 0;
+        })
+      }
+    } else {
+      const datad = await indexedDBStorage.getItem(EXPENSE_PERSON_TABLE)
+      data = datad || []
     }
     setPersons(data)
   }
 
   useEffect(() => {
     getData()
-  }, [filters.status,filters.startDate,filters.endDate])
+  }, [filters.status, filters.startDate, filters.endDate])
 
   useEffect(() => {
-    if (user) {
-      getCategories()
-      getPersonsList()
-    }
+    getCategories()
+    getPersonsList()
   }, [])
 
   const filter = (p = {}) => {
@@ -169,9 +180,9 @@ export default function Content() {
     ]
     const f: any = filters
     if (keys.find(key => f[key] ? true : false)) value = true
-    if(f.persons?.length) value=true
-    if(f.paidBy?.length) value=true
-    if(f.category?.length) value=true
+    if (f.persons?.length) value = true
+    if (f.paidBy?.length) value = true
+    if (f.category?.length) value = true
     return value
   }, [filters])
 
@@ -180,8 +191,8 @@ export default function Content() {
       // status: '',
       paidBy: [],
       search: '',
-      category:[],
-      persons:[]
+      category: [],
+      persons: []
     }
     filter(f)
   }
@@ -200,10 +211,10 @@ export default function Content() {
       })
       ?.filter((item: any) => {
         if (filters.status && item.status !== filters.status) return false;
-        if (filters.paidBy.length && !filters.paidBy.some(personId=>item.paidBy==personId)) return false;
-        if (filters.category.length && !filters.category.some(id=>item.category==id)) return false;
+        if (filters.paidBy.length && !filters.paidBy.some(personId => item.paidBy == personId)) return false;
+        if (filters.category.length && !filters.category.some(id => item.category == id)) return false;
         if (filters.persons.length && !filters.persons.some((personId) => item.persons.includes(personId))) return false;
-        
+
 
         if (filters.search) {
           const searchValue = filters.search.toLowerCase().trim();
@@ -218,7 +229,7 @@ export default function Content() {
       ?.sort((a: any, b: any) => {
         const aVal = a?.[key];
         const bVal = b?.[key];
-        if (key === 'createdAt'|| key === 'date' || key === 'updatedAt') {
+        if (key === 'createdAt' || key === 'date' || key === 'updatedAt') {
           return new Date(bVal).getTime() - new Date(aVal).getTime();
         }
         if (key === 'price') {
@@ -228,13 +239,13 @@ export default function Content() {
       });
   }, [list, filters, categories]);
 
-   const totalPaid = useMemo(() => {
+  const totalPaid = useMemo(() => {
     const t = data?.map((itm: any) => Number(itm.price || 0)).reduce((p, c) => c + p, 0)
     return t
   }, [data])
 
-    const totalShare = useMemo(() => {
-    const t = data?.filter((item:any)=>item.persons?.length>1).map((itm: any) => Number(itm.price || 0) / Number(itm.persons?.length || 0)).reduce((p, c) => c + p, 0)
+  const totalShare = useMemo(() => {
+    const t = data?.filter((item: any) => item.persons?.length > 1).map((itm: any) => Number(itm.price || 0) / Number(itm.persons?.length || 0)).reduce((p, c) => c + p, 0)
     return t
   }, [data])
 
@@ -262,7 +273,7 @@ export default function Content() {
     })
   }
 
-  const formAction = (e: any) => {
+  const formAction = async (e: any) => {
     setAddeditModal(null)
     if (e.action == 'submit') {
       if (addeditModal?.id) {
@@ -272,10 +283,18 @@ export default function Content() {
           ...arr[index],
           ...e.value
         }
+
+        if (!user) {
+          await indexedDBStorage.setItem(PAGE_TABLE, arr)
+        }
         setList([...arr])
       } else {
         const arr: any[] = [...list]
         arr.push(e.value)
+
+        if (!user) {
+          await indexedDBStorage.setItem(PAGE_TABLE, arr)
+        }
         setList([...arr])
       }
     }
@@ -317,7 +336,7 @@ export default function Content() {
       <div className="lg:col-span-2">
         <div className="flex flex-wrap gap-4 text-blue-500">
           <span>Total Paid: <span className="font-bold">{pipeModel.currency(totalPaid)}</span></span>
-           <span>Total Share Per Person:  <span className="font-bold">{pipeModel.currency(totalShare)}</span></span>
+          <span>Total Share Per Person:  <span className="font-bold">{pipeModel.currency(totalShare)}</span></span>
         </div>
         <div className="bg-white rounded-lg shadow-md p-6">
           <div id="search-filter" className="mb-4 p-4 bg-gray-50 rounded-md">
@@ -326,29 +345,29 @@ export default function Content() {
                 value={filters.search}
                 onChange={e => filter({ search: e })}
                 type="text" placeholder="Search..." className="px-3 py-2 border border-gray-300 rounded-md" />
-                <div>
-                  <MkDateRangePicker
+              <div>
+                <MkDateRangePicker
                   value={{
-                    startDate:filters.startDate,
-                    endDate:filters.endDate,
-                    range:filters.range
+                    startDate: filters.startDate,
+                    endDate: filters.endDate,
+                    range: filters.range
                   }}
-                  onChange={e=>{
+                  onChange={e => {
                     filter({
                       startDate: e.startDate,
                       endDate: e.endDate,
                       range: e.range
                     })
                   }}
-                  />
-                  <div className="text-right">
-                    {filters.startDate?<>
-                      <span className="text-blue-500 cursor-pointer text-[13px]"
-                    onClick={()=>filter({startDate:'',endDate:'',range:''})}
+                />
+                <div className="text-right">
+                  {filters.startDate ? <>
+                    <span className="text-blue-500 cursor-pointer text-[13px]"
+                      onClick={() => filter({ startDate: '', endDate: '', range: '' })}
                     >Clear</span>
-                    </>:<></>}
-                  </div>
+                  </> : <></>}
                 </div>
+              </div>
               <div className="min-w-[200px]">
                 <OptionDropdown
                   value={filters.category}

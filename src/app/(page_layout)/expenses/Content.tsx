@@ -48,7 +48,6 @@ export default function Content() {
   const [list, setList] = useState<ExpenseForm[]>([])
   const [categories, setCategories] = useState<CategoryType[]>([])
   const [addeditModal, setAddeditModal] = useState<any>();
-  const [balanceModal, setBalanceModal] = useState<any>();
   const range = getRange('This Month')
   const [filters, setFilters] = useState({
     search: '',
@@ -139,9 +138,9 @@ export default function Content() {
       }
     }
     else {
-
+      const datad = await indexedDBStorage.getItem(contri_table)
+      data = datad || []
     }
-
 
     setCategories([...data, ...data1])
   }
@@ -152,9 +151,7 @@ export default function Content() {
   }, [filters.startDate, filters.endDate])
 
   useEffect(() => {
-    if (user) {
-      getCategories()
-    }
+   getCategories()
   }, [])
 
   const filter = (p = {}) => {
@@ -269,12 +266,17 @@ export default function Content() {
           ...e.value
         }
 
-        await indexedDBStorage.setItem(PAGE_TABLE, arr)
+        if (!user) {
+          await indexedDBStorage.setItem(PAGE_TABLE, arr)
+        }
+
         setList([...arr])
       } else {
         const arr: any[] = [...list]
         arr.push(e.value)
-        await indexedDBStorage.setItem(PAGE_TABLE, arr)
+        if (!user) {
+          await indexedDBStorage.setItem(PAGE_TABLE, arr)
+        }
         setList([...arr])
       }
     }

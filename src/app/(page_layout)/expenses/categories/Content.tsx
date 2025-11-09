@@ -14,6 +14,7 @@ import DebouncedInput from "@/components/DebouncedInput";
 import Modal from "@/components/Modal";
 import AddEdit from "./AddEdit";
 import ExpenseTabs from "../ExpenseTabs";
+import { indexedDBStorage } from "@/utils/indexedDBStorage";
 
 export type ExpenseForm = {
   id?: string | null
@@ -67,22 +68,26 @@ export default function Content() {
     const conditions: FirestoreConditions[] = [
       { field: 'addedBy', operator: '==', value: user?.id },
     ]
-    const res = await getList(PAGE_TABLE, conditions)
     let data = []
-    if (res.data) {
-      data = res.data.map((itm: any) => ({
-        ...itm,
-        createdAt: itm.createdAt || itm.date,
-        status: itm.status || 'deactive'
-      }))
+
+    if (user) {
+      const res = await getList(PAGE_TABLE, conditions)
+      if (res.data) {
+        data = res.data.map((itm: any) => ({
+          ...itm,
+          createdAt: itm.createdAt || itm.date,
+          status: itm.status || 'deactive'
+        }))
+      }
+    } else {
+      const datad = await indexedDBStorage.getItem(PAGE_TABLE)
+      data = datad || []
     }
     setList(data)
   }
 
   useEffect(() => {
-    if (user) {
-      getData()
-    }
+   getData()
   }, [])
 
   const filter = (p = {}) => {
@@ -160,7 +165,7 @@ export default function Content() {
     })
   }
 
-  const formAction = (e: any) => {
+  const formAction = async (e: any) => {
     setAddeditModal(null)
     if (e.action == 'submit') {
       if (addeditModal?.id) {
@@ -170,13 +175,22 @@ export default function Content() {
           ...arr[index],
           ...e.value,
         }
+
+        if (!user) {
+          await indexedDBStorage.setItem(PAGE_TABLE, arr)
+        }
+
         setList([...arr])
       } else {
         const arr: any[] = [...list]
         arr.push({
           ...e.value,
-          createdAt:datepipeModel.datetodatetime(e.value.createdAt)
+          createdAt: datepipeModel.datetodatetime(e.value.createdAt)
         })
+
+        if (!user) {
+          await indexedDBStorage.setItem(PAGE_TABLE, arr)
+        }
         setList([...arr])
       }
     }
