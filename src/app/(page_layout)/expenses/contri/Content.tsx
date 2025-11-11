@@ -87,6 +87,7 @@ export default function Content() {
         } else {
           await indexedDBStorage.setItem(PAGE_TABLE, arr)
            setList(arr)
+           loaderHtml(false)
         }
         
       }
@@ -142,7 +143,11 @@ export default function Content() {
       }
     } else {
       const datad = await indexedDBStorage.getItem(EXPENSE_CATEGORY_TABLE)
-      data = datad || []
+      data = (datad || []).map((itm: any, i: any) => ({ ...itm, color: getColor(i) })).sort((a: any, b: any) => {
+          if (a.name.toLocaleLowerCase() < b.name.toLocaleLowerCase()) return -1; // a comes before b
+          if (a.name.toLocaleLowerCase() > b.name.toLocaleLowerCase()) return 1;  // a comes after b
+          return 0;
+        })
     }
     setCategories(data)
   }
@@ -160,7 +165,11 @@ export default function Content() {
       }
     } else {
       const datad = await indexedDBStorage.getItem(EXPENSE_PERSON_TABLE)
-      data = datad || []
+      data = (datad || []).map((itm: any, i: any) => ({ ...itm, color: getColor(i) })).sort((a: any, b: any) => {
+          if (a.name.toLocaleLowerCase() < b.name.toLocaleLowerCase()) return -1; // a comes before b
+          if (a.name.toLocaleLowerCase() > b.name.toLocaleLowerCase()) return 1;  // a comes after b
+          return 0;
+        })
     }
     setPersons(data)
   }
