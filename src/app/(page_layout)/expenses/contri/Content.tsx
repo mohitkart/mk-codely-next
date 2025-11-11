@@ -72,17 +72,23 @@ export default function Content() {
     fire({
       icon: 'warning',
       title: 'Do you want to delete this?', cancelButtonText: 'No', confirmButtonText: 'Yes', showCancelButton: true
-    }).then(res => {
+    }).then(async res => {
       if (res.isConfirmed) {
         loaderHtml(true)
-        deleteApi(PAGE_TABLE, id).then(res => {
-          if (res.success) {
-            const arr = list.filter((itm: any) => itm.id != id)
-            setList(arr)
-          }
-        }).finally(() => {
-          loaderHtml(false)
-        })
+        const arr = list.filter((itm: any) => itm.id != id)
+        if(user){
+          deleteApi(PAGE_TABLE, id).then(res => {
+            if (res.success) {
+              setList(arr)
+            }
+          }).finally(() => {
+            loaderHtml(false)
+          })
+        } else {
+          await indexedDBStorage.setItem(PAGE_TABLE, arr)
+           setList(arr)
+        }
+        
       }
     })
   }
