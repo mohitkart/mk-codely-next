@@ -58,7 +58,6 @@ export default function Content() {
                 return <span className="capitalize truncate max-w-[300px] inline-block" title={row?.title}>{row?.title}</span>
             }
         },
-
         {
             key: 'category', name: 'Category',
             render: (row) => {
@@ -78,6 +77,17 @@ export default function Content() {
             render: (row) => {
                 return <>
                     {datepipeModel.datetime(row?.updatedAt)}
+                </>
+            }
+        },
+        {
+            key: 'tags', name: 'Tags', sort: true,
+            render: (row) => {
+                let l=row.tags?.length||0
+                if(l<=3) l=''
+                else l=`, ${l=3}+`
+                return <>
+                   {row?.tags?.slice(0,3).join(', ')}{l}
                 </>
             }
         },

@@ -289,8 +289,11 @@ export default function TaskComponent({loaderData}:{loaderData?:Task}) {
         if (item.status != filters.status) value = false
       }
       if (filters.startDate) {
-        const date=datepipeModel.datetostring(fireDateParse(item.date))
-        if (date!=filters.startDate) value = false
+        const startDate = new Date(`${filters.startDate} 00:00`).getTime();
+        const endDate = new Date(`${filters.endDate} 23:59`).getTime();
+        const date = new Date(fireDateParse(item.date)).getTime()
+        if (date >= startDate && date <= endDate) value = true
+        else value = false
       }
       if (filters.search) {
         const v = filters.search?.toLowerCase()
