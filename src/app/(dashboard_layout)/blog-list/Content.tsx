@@ -19,7 +19,7 @@ import DebouncedInput from "@/components/DebouncedInput";
 
 export default function Content() {
     const user: any = useSelector((state: RootState) => state.user.data);
-    const [list, setList] = useState([])
+    const [list, setList] = useState<any[]>([])
     const [categories, setCategories] = useState<any[]>([])
     const [filters, setFilters] = useState({
         search: '',
@@ -30,21 +30,24 @@ export default function Content() {
     })
     const { get: getList, isLoading: isListLoading } = FireApi()
     const { get: getCategory, isLoading: categoryLoading } = FireApi()
-    const { deleteApi, isLoading: isActionLoading } = FireApi()
+    const { deleteApi,put, isLoading: isActionLoading } = FireApi()
 
 
-    const remove=(id:any)=>{
+    const remove = (id: any) => {
         fire({
-            icon:'warning',
-            title:'Do you want to delete this?',cancelButtonText:'No',confirmButtonText:'Yes',showCancelButton:true}).then(res=>{
-            if(res.isConfirmed){
+            icon: 'warning',
+            title: 'Do you want to delete this?', 
+            cancelButtonText: 'No', 
+            confirmButtonText: 'Yes', showCancelButton: true
+        }).then(res => {
+            if (res.isConfirmed) {
                 loaderHtml(true)
-                deleteApi(PAGE_TABLE,id).then(res=>{
-                    if(res.success){
-                        const arr=list.filter((itm:any)=>itm.id!=id)
+                deleteApi(PAGE_TABLE, id).then(res => {
+                    if (res.success) {
+                        const arr = list.filter((itm: any) => itm.id != id)
                         setList(arr)
                     }
-                }).finally(()=>{
+                }).finally(() => {
                     loaderHtml(false)
                 })
             }
@@ -52,6 +55,17 @@ export default function Content() {
     }
 
     const columns: MkTableColumn[] = [
+        {
+            key: 'publish', name: 'Publish',
+            render: (row) => {
+                return <label className="inline-flex items-center cursor-pointer">
+                    <input type="checkbox" className="sr-only peer"
+                    checked={row?.publish?true:false}
+                    onChange={()=>handlePublish({id:row.id,publish:row.publish?false:true})} />
+                    <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
+                </label>
+            }
+        },
         {
             key: 'title', name: 'Title', sort: true,
             render: (row) => {
@@ -83,11 +97,11 @@ export default function Content() {
         {
             key: 'tags', name: 'Tags', sort: true,
             render: (row) => {
-                let l=row.tags?.length||0
-                if(l<=3) l=''
-                else l=`, ${l=3}+`
+                let l = row.tags?.length || 0
+                if (l <= 3) l = ''
+                else l = `, ${l = 3}+`
                 return <>
-                   {row?.tags?.slice(0,3).join(', ')}{l}
+                    {row?.tags?.slice(0, 3).join(', ')}{l}
                 </>
             }
         },
@@ -109,11 +123,11 @@ export default function Content() {
                         <Link href={`blog/${itm.id}`} target="_blank" className="action-btn" title="View">
                             <span className="material-symbols-outlined">visibility</span>
                         </Link>
-                       <Link href={`${PAGE_URL}/edit/${itm.id}`} className="action-btn" title="View">
+                        <Link href={`${PAGE_URL}/edit/${itm.id}`} className="action-btn" title="View">
                             <span className="material-symbols-outlined">edit</span>
                         </Link>
                         <button className="action-btn" title="Delete"
-                        onClick={()=>remove(itm.id)}
+                            onClick={() => remove(itm.id)}
                         >
                             <span className="material-symbols-outlined">delete</span>
                         </button>
@@ -219,8 +233,30 @@ export default function Content() {
         },
     ]
 
-    const exportFuc=()=>{
-        createBackup({table:PAGE_TABLE,data:list})
+    const exportFuc = () => {
+        createBackup({ table: PAGE_TABLE, data: list })
+    }
+
+    const handlePublish = (p:any) => {
+        fire({
+            title: `Do you want to ${p.publish?'Publish':'Un-Publish'} this`,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+            showCancelButton: true
+        }).then(res => {
+            if (res.isConfirmed) {
+                loaderHtml(true)
+                put(PAGE_TABLE,{...p}).then(res=>{
+                    if(res.success){
+                        fire({title:`${p.publish?'Published':'Un-Published'} Successfully`})
+                        setList(list.map(t => t.id === p?.id ? { ...t, ...p } : t))
+                    }
+                }).finally(()=>{
+                    loaderHtml(false)
+                })
+             
+            }
+        })
     }
 
     return (
@@ -231,8 +267,8 @@ export default function Content() {
                     <div className="relative flex-grow max-w-md">
                         <span className="material-symbols-outlined absolute left-3 top-3 text-gray-400">search</span>
                         <DebouncedInput type="text" placeholder="Search..."
-                        value={filters.search}
-                        onChange={e=>filter({search:e})}
+                            value={filters.search}
+                            onChange={e => filter({ search: e })}
                             className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                     </div>
 
@@ -242,7 +278,7 @@ export default function Content() {
                             <span className="material-symbols-outlined mr-2">add</span>
                             Add {ADD_PAGE_NAME}
                         </Link>
-                        <button onClick={()=>exportFuc()} className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 px-4 py-3 rounded-lg flex items-center transition-colors">
+                        <button onClick={() => exportFuc()} className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 px-4 py-3 rounded-lg flex items-center transition-colors">
                             <span className="material-symbols-outlined mr-2">download</span>
                             Export
                         </button>
@@ -262,8 +298,8 @@ export default function Content() {
                         />
                     </div>
 
-                    
-                     <div className="min-w-[250px]">
+
+                    <div className="min-w-[250px]">
                         <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
                         <OptionDropdown
                             value={filters.category}
