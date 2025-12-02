@@ -248,7 +248,7 @@ export default function Content() {
                 loaderHtml(true)
                 put(PAGE_TABLE,{...p}).then(res=>{
                     if(res.success){
-                        fire({title:`${p.publish?'Published':'Un-Published'} Successfully`})
+                        // fire({title:`${p.publish?'Published':'Un-Published'} Successfully`})
                         setList(list.map(t => t.id === p?.id ? { ...t, ...p } : t))
                     }
                 }).finally(()=>{

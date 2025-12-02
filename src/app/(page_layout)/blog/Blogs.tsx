@@ -52,7 +52,10 @@ export default function Blogs() {
   }
   const [filters, setFilter] = useState<FilterType>({category:query.get('category'),search:query.get('search')})
   const getData = async () => {
-    const res = await get(table,[{field:'status',operator:'==',value:'active'}])
+    const res = await get(table,[
+      {field:'status',operator:'==',value:'active'},
+      {field:'publish',operator:'==',value:true},
+    ])
     let data = []
     if (res.data) {
       data = res.data
