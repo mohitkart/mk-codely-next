@@ -254,7 +254,6 @@ export default function Content() {
                 }).finally(()=>{
                     loaderHtml(false)
                 })
-             
             }
         })
     }
