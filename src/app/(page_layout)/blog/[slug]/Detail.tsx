@@ -299,14 +299,14 @@ export default function BlogDetail() {
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-primary to-blue-400 rounded-xl shadow-sm p-6 text-white bg-blue-600">
+          {/* <div className="bg-gradient-to-r from-primary to-blue-400 rounded-xl shadow-sm p-6 text-white bg-blue-600">
             <h3 className="font-semibold text-xl mb-4">Subscribe to our newsletter</h3>
             <p className="mb-4">Get the latest articles, tips, and news delivered to your inbox.</p>
             <form className="space-y-3" onSubmit={e => { e.preventDefault() }}>
               <input type="email" placeholder="Your email address" className="w-full bg-white px-4 py-2 rounded-lg text-[#000]" />
               <button type="submit" className="w-full bg-[#000] cursor-pointer text-white py-2 rounded-lg font-medium hover:bg-gray-800 transition">Subscribe</button>
             </form>
-          </div>
+          </div> */}
         </aside>
       </div>
     </main>

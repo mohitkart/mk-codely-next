@@ -14,7 +14,7 @@ type Props={
 
 export default function ImageHtml({
   src,
-  errSrc = "/img/placeholder.jpg",
+  errSrc = "/img/placeholder.png",
   onClick = () => {},
   className = "",
   id = "",
@@ -26,6 +26,8 @@ export default function ImageHtml({
   const imageErr = (e:any) => {
     // console.error("imageErr",e.target.src)
     e.target.src = errSrc;
+    e.target.srcset=errSrc
+    
   };
 
   return (

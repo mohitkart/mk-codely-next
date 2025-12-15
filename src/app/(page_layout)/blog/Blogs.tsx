@@ -16,7 +16,8 @@ const BlogCard = ({ item }: { item: any }) => {
       height={192}
       width={480}
       alt={item.title}
-      src={noImg((item.image||item.categoryDetail?.image),'blogs')}
+      errSrc="/img/article.png"
+      src={noImg((item.image||item.categoryDetail?.image),'blogs','/img/article.png')}
       className={`object-cover h-full w-full bg-gradient-to-r from-purple-400 to-pink-500`}
       />
       </Link>
