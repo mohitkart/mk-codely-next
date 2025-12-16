@@ -5,6 +5,8 @@ import Detail from "./Detail";
 
 const table = 'blogs'
 
+export const revalidate = 300;
+
 async function getBlog(slug: string) {
   const detail: any = await getIdFire({ table, id: slug })
   return detail.data
