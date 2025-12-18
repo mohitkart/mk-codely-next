@@ -51,7 +51,7 @@ export const fireDateParse=(p:any)=>{
 }
 
 export async function writeDatabase(url:string,payload:any) {
-return await set(rtRef(realtimeDB, `${url}`), {
+  return await set(rtRef(realtimeDB, `${url}`), {
     ...payload,
     createdAt: Date.now()
   });
@@ -224,8 +224,8 @@ export const updateFire = async ({ table, payload }: AddUpdateProps) => {
         success: true,
         data: {
           ...snapshot.data(),
-            createdAt:fireDateParse(snapshot.data().createdAt),
-        updatedAt:fireDateParse(snapshot.data().updatedAt),
+          createdAt: fireDateParse(snapshot.data().createdAt),
+          updatedAt: fireDateParse(snapshot.data().updatedAt),
           id: snapshot.id,
         } 
       };

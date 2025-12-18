@@ -2,16 +2,26 @@
 import ImageHtml from "@/components/ImageHtml"
 import datepipeModel from "@/utils/datepipemodel"
 import FireApi from "@/utils/firebaseApi.utils"
-import { noImg } from "@/utils/shared"
+import { loaderHtml, noImg } from "@/utils/shared"
 import { getShortCode } from "@/utils/shared.utils"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { SubmitHandler, useForm } from "react-hook-form"
 
 const table = 'blogs'
+const commentTable='Comments'
+
+type FormType = {
+  name: string
+  email: string
+  comment: string
+}
+
 
 export default function BlogDetail() {
   const { slug } = useParams()
+  const { get: getComments, isLoading: isCommentLoading,post,put,deleteApi } = FireApi()
   const { get: getDetail, isLoading: detailLoading } = FireApi()
   const { get: getRecent, isLoading: recentLoading } = FireApi()
   const { get: getCategory, isLoading: catLoading } = FireApi()
@@ -21,6 +31,7 @@ export default function BlogDetail() {
   const [categories, setCategories] = useState<any>([])
   const [recentPost, setRecentPost] = useState<any>([])
   const [search, setSearch] = useState<any>('')
+  const [comments, setComments] = useState<any[]>([])
   const router = useRouter()
   const navigate = (p = '') => {
     router.push(p)
@@ -55,6 +66,15 @@ export default function BlogDetail() {
         setRecentPost(res.data)
       }
     })
+    getComments(commentTable,[{
+      field:'blogid',
+      operator:'==',
+      value:slug
+    }]).then(res=>{
+      if(res.success){
+        setComments(res.data)
+      }
+    })
   }, [])
 
   useEffect(() => {
@@ -62,6 +82,37 @@ export default function BlogDetail() {
       gtCatDetail()
     }
   }, [loaderData])
+
+
+  const {
+      register,
+      handleSubmit,
+      watch,
+      setValue,
+      getValues,
+      control,
+      reset: resetForm,
+      formState: { errors, defaultValues },
+    } = useForm<FormType>({ defaultValues: { name: '', email: '', comment: ''} })
+
+    const onSubmit: SubmitHandler<FormType> = (data) => {
+      loaderHtml(true)
+      const payload={
+        ...data,
+        blogid:slug
+      }
+       post(commentTable, payload).then(res => {
+          if (res.success) {
+            setComments((prev:any[])=>{
+              const arr=[{...payload,createdAt:new Date().toISOString()},...prev]
+              return arr
+            })
+            resetForm()
+          }
+        }).finally(() => {
+          loaderHtml(false)
+        })
+    }
 
   return (
     <main className="container mx-auto px-4 py-8 md:py-12">
@@ -163,11 +214,16 @@ export default function BlogDetail() {
 
 
               <div className="mb-8">
-                <h2 className="text-2xl font-bold text-dark mb-6">Comments (3)</h2>
+                <h2 className="text-2xl font-bold text-dark mb-6">Comments ({comments.length})</h2>
 
                 <div className="space-y-6">
-
-                  <div className="flex">
+                  {isCommentLoading?<>
+                    <div className="shine h-[120px] rounded mb-4"></div>
+                    <div className="shine h-[120px] rounded mb-4"></div>
+                    <div className="shine h-[120px] rounded mb-4"></div>
+                  </>:<>
+                  {comments.map((item,i)=>{
+                    return <div className="flex" key={i}>
                     <ImageHtml
                       height={40}
                       width={40}
@@ -175,55 +231,44 @@ export default function BlogDetail() {
                     <div className="flex-1">
                       <div className="bg-white rounded-lg p-4 shadow-sm">
                         <div className="flex justify-between items-center mb-2">
-                          <h4 className="font-semibold">Sarah Johnson</h4>
-                          <span className="text-sm text-gray-500">2 days ago</span>
+                          <h4 className="font-semibold capitalize">{item.name}</h4>
+                          <span className="text-sm text-gray-500">{datepipeModel.datetime(item.createdAt)}</span>
                         </div>
-                        <p className="text-gray-700">{`Great insights! I've been using WebAssembly in my recent projects and the performance gains are incredible. Looking forward to more articles on this topic.`}</p>
+                        <p className="text-gray-700">{item.comment}</p>
                         <div className="mt-3 flex items-center space-x-4">
-                          <button className="text-sm text-gray-500 hover:text-primary"><span className="material-symbols-outlined">reply</span> Reply</button>
-                          <button className="text-sm text-gray-500 hover:text-primary"><span className="material-symbols-outlined">heart_plus</span> Like</button>
+                          {/* <button className="text-sm text-gray-500 hover:text-primary"><span className="material-symbols-outlined">reply</span> Reply</button> */}
+                          {/* <button className="text-sm text-gray-500 hover:text-primary"><span className="material-symbols-outlined">heart_plus</span> Like</button> */}
                         </div>
                       </div>
                     </div>
                   </div>
+                  })}
+                  </>}
 
-                  <div className="flex">
-                    <ImageHtml
-                      height={40}
-                      width={40}
-                      src="/img/placeholder.png" alt="User" className="w-12 h-12 rounded-full mr-4" />
-                    <div className="flex-1">
-                      <div className="bg-white rounded-lg p-4 shadow-sm">
-                        <div className="flex justify-between items-center mb-2">
-                          <h4 className="font-semibold">Sarah Johnson</h4>
-                          <span className="text-sm text-gray-500">2 days ago</span>
-                        </div>
-                        <p className="text-gray-700">{`Great insights! I've been using WebAssembly in my recent projects and the performance gains are incredible. Looking forward to more articles on this topic.`}</p>
-                        <div className="mt-3 flex items-center space-x-4">
-                          <button className="text-sm text-gray-500 hover:text-primary"><span className="material-symbols-outlined">reply</span> Reply</button>
-                          <button className="text-sm text-gray-500 hover:text-primary"><span className="material-symbols-outlined">heart_plus</span> Like</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
 
                 <div className="mt-8">
                   <h3 className="text-xl font-semibold text-dark mb-4">Leave a comment</h3>
-                  <form className="space-y-4">
+                  <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                        <input type="text" id="name" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" />
+                        <input type="text" id="name"
+                         {...register("name")}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" />
                       </div>
                       <div>
                         <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input type="email" id="email" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" />
+                        <input type="email" id="email" 
+                         {...register("email")}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" />
                       </div>
                     </div>
                     <div>
                       <label htmlFor="comment" className="block text-sm font-medium text-gray-700 mb-1">Comment</label>
-                      <textarea id="comment" rows={4} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"></textarea>
+                      <textarea id="comment" rows={4}
+                       {...register("comment")}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"></textarea>
                     </div>
                     <button type="submit" className="px-6 py-2 bg-blue-600 cursor-pointer text-white font-medium rounded-lg hover:bg-blue-700 transition">Post Comment</button>
                   </form>
