@@ -32,7 +32,7 @@ export async function POST(req: Request) {
             lastLogin: new Date().toISOString(),
         };
 
-        const isMatch = await bcrypt.compare(payload.password, data.password) || payload.password == data.password;
+        const isMatch = await bcrypt.compare(payload.password, data.password);
         if (!isMatch) {
             return NextResponse.json({ success: false, message: "You entered the wrong password." }, { status: 400 });
         }

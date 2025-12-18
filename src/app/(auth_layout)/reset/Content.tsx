@@ -5,16 +5,20 @@ import { useRouter, useSearchParams } from "next/navigation";
 import ApiClientB from "@/utils/Apiclient";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import envirnment from "@/envirnment";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/store";
+import { login } from "@/redux/slices/userSlice";
 
 export default function Content() {
   const router = useRouter()
+   const dispatch = useDispatch<AppDispatch>();
   const navigate = (p = '') => {
     router.push(p)
   }
   const { put, isLoading: loading } = ApiClientB()
   const searchParams= useSearchParams();
-  const id = searchParams.get("id") ?? "";
-  const code = searchParams.get("code") ?? "";
+  const q = searchParams.get("q") ?? "";
 
   const [form, setForm] = useState({
     password: '',
@@ -22,11 +26,9 @@ export default function Content() {
   })
 
   const handleSubmit = () => {
-   
     const payload = {
       password: form.password,
-      verificationCode: code,
-      id: id,
+      q: q
     };
 
     if(form.password!=form.confirmPassword){
@@ -34,10 +36,10 @@ export default function Content() {
       return
     }
 
-     loaderHtml(true)
-    put('user/reset/password', { ...payload }).then(res => {
+    loaderHtml(true)
+    put('api/reset', { ...payload },envirnment.frontUrl).then(res => {
       if (res.success) {
-        // dispatch(login(res.data))
+        dispatch(login(res.data))
         navigate('/')
       }
       loaderHtml(false)

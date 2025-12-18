@@ -1,6 +1,6 @@
 // app/api/hello/route.ts
 import { getFire } from "@/utils/firebase.utils";
-import { sendVerificationEmail } from "@/utils/mailer.shared";
+import { sendResetEmail } from "@/utils/mailer.shared";
 import { NextResponse } from "next/server";
 
 const table='users'
@@ -11,12 +11,12 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const { to } = await req.json();
+    const { email } = await req.json();
 
     const res=await getFire({table:table,conditions:[{
       field:'email',
       operator:'==',
-      value:to
+      value:email
     }]})
 
 
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, message:'Email is not exist' },{status:400});
     }
    
-    const vres = await sendVerificationEmail({ data: res.data[0] })
+    const vres = await sendResetEmail({ data: res.data[0] })
     return NextResponse.json(vres,{status:vres.success?200:400});
   } catch (error:any) {
     console.error("Email error:", error);

@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ApiClientB from "@/utils/Apiclient";
 import { useState } from "react";
+import envirnment from "@/envirnment";
+import { fire } from "@/components/Swal";
 
 export default function Content() {
   const router = useRouter()
@@ -22,9 +24,10 @@ export default function Content() {
     const payload={
       email:form.email
     }
-    post('user/forgot',payload).then(res => {
+    post('api/forgot',payload,{},envirnment.frontUrl).then(res => {
       if (res.success) {
-        navigate('/login')
+        fire({icon:'success',title:'Password reset link sent. Please check your email.'})
+        navigate('/')
       }
       loaderHtml(false)
     })
